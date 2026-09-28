@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>うちわ文字 お見積り・ご注文（試作v2）</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Hachi+Maru+Pop&family=Mochiy+Pop+One&family=Potta+One&family=RocknRoll+One&family=Yusei+Magic&family=Zen+Maru+Gothic:wght@400;700&display=swap">
+<style>
+:root{--bg:#f3fbfc;--ink:#132b36;--mut:#5b7d88;--line:#d6eef2;--ac:#0eaeb0;--acink:#fff;--panel:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e2530;--ink:#eaf7f8;--mut:#9fc4cc;--line:#1f4550;--ac:#3fd0cf;--acink:#0a2226;--panel:#153542}}
+:root[data-theme="dark"]{--bg:#0e2530;--ink:#eaf7f8;--mut:#9fc4cc;--line:#1f4550;--ac:#3fd0cf;--acink:#0a2226;--panel:#153542}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;line-height:1.6;padding-bottom:130px}
+main{max-width:560px;margin:0 auto;padding:16px 18px}
+h1,h2,.tot b{font-family:"Mochiy Pop One","Hachi Maru Pop","Zen Maru Gothic",sans-serif;font-weight:400}
+h1{font-size:1.45rem;line-height:1.3;margin:10px 0 6px}
+h2{font-size:1rem;margin:0 0 8px}
+.lead,.lbl,small{color:var(--mut);font-size:.85rem}
+.lead{margin:0 0 14px}
+section{border-top:2px solid var(--line);padding:16px 0}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;font-size:.85rem;padding:9px 6px;background:transparent;color:var(--ac)}
+.tabs button.on{background:var(--ac);color:var(--acink)}
+.pv{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:#5b84ad;border:6px solid #0a3d70;color:#fff;border-radius:14px;padding:10px;text-align:center;margin:10px 0}
+#dcanvas{position:absolute;inset:0;pointer-events:none}
+#pvt{font-size:2.2rem;line-height:1.3;min-height:3rem;word-break:break-all}
+#pvs{display:block;color:#bfe9ec;font-size:.72rem}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;margin:6px 0;background:var(--panel);border:1.5px solid var(--line);border-radius:12px}
+.row:has(input:checked){border-color:var(--ac)}
+.row input{accent-color:var(--ac);margin-right:8px}
+.row .p{color:var(--mut);white-space:nowrap;font-size:.9rem}
+select,input[type=number],input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin:4px 0 8px}
+.g3,.g4,.g2{display:grid;gap:8px}
+.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.card{position:relative;display:block;border:1.5px solid var(--line);border-radius:12px;padding:6px;text-align:center;background:var(--panel);font-size:.78rem;line-height:1.35}
+.card input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.card:has(input:checked){border-color:var(--ac);box-shadow:0 0 0 2px var(--ac)}
+.card:has(input:focus-visible){outline:3px solid var(--ac)}
+.ph{aspect-ratio:1;border-radius:8px;display:grid;place-items:center;font-size:.65rem;color:#fff;text-shadow:0 1px 2px #0007;margin-bottom:4px}
+.ft span{display:block;font-size:1.3rem;line-height:1.5;min-height:2.2rem;word-break:break-all}
+.sws{display:flex;flex-wrap:wrap;margin:2px 0 6px}
+.slotgrp+.slotgrp{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}
+.sw{position:relative;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);margin:3px}
+.sw input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.sw:has(input:checked){outline:3px solid var(--ac);outline-offset:1px}
+.btns{display:grid;gap:10px;margin-top:8px}
+button{font:inherit;font-weight:700;border-radius:999px;padding:12px 18px;cursor:pointer;border:2px solid var(--ac)}
+.pri{background:var(--ac);color:var(--acink)}.sec{background:transparent;color:var(--ac)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+#res{margin-top:14px;padding:14px;border-radius:12px;background:var(--panel);border:1.5px dashed var(--ac);font-size:.9rem;white-space:pre-wrap}
+#res:empty{display:none}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--bg);padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));z-index:6}
+.bar>div{max-width:560px;margin:0 auto}
+.tot{display:flex;justify-content:space-between;align-items:baseline}
+.tot b{font-size:1.8rem;font-variant-numeric:tabular-nums}
+summary{cursor:pointer;font-size:.85rem;opacity:.85}
+#lines{font-size:.85rem;max-height:30vh;overflow-y:auto}
+#lines div{display:flex;justify-content:space-between;gap:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px}
+.chip{flex:none;padding:6px 12px;font-size:.8rem;background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.chip.on{background:var(--ac);color:var(--acink);border-color:var(--ac)}
+.oc{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font-weight:400;background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:10px;margin:8px 0}
+.th{flex:none;width:84px;height:84px;border-radius:10px;background:#0a3d70;color:#fff;display:grid;place-items:center;font-size:1.25rem;overflow:hidden;text-align:center;line-height:1.2}
+.oc div{min-width:0}.oc b{display:block}
+.st{display:inline-block;font-size:.72rem;padding:1px 9px;border-radius:99px;background:var(--ac);color:var(--acink);margin-left:6px}
+</style>
+</head>
+<body>
+<main>
+<div id="intro">
+<h1>うちわ文字<br>お見積り・ご注文</h1>
+<p class="lead">ご注文の流れ</p>
+<div class="oc" style="display:block">
+<div style="text-align:left;line-height:2">
+1️⃣ 無料で自動お見積り🩵<br>
+2️⃣ お見積りだけの方はここで終了🙆‍♀️<br>
+3️⃣ ご注文の方は一部をお支払い💳<br>
+4️⃣ サンプルデータをご確認✅<br>
+5️⃣ 残りをお支払い💳<br>
+6️⃣ 制作・発送🚚
+</div>
+</div>
+<p class="lead" style="margin-top:14px">ごあいさつ</p>
+<div class="oc" style="display:block"><small>はじめまして、うちわ文字専門のハンドメイドショップです☺️<br>一つひとつ手作業でカット・仕上げしています。「推しへの気持ちが伝わる、可愛くて目立つうちわ」を目指して制作中です！オープンしたてで至らない点もあるかもしれませんが、精一杯対応します🩵<br>（仮の文章です。後ほど差し替えます）</small></div>
+<p class="lead" style="margin-top:14px">ご注意事項</p>
+<div class="oc" style="display:block"><small>（後ほど記載します）</small></div>
+<button class="pri" id="introOk" style="width:100%;margin-top:14px">OK・注文フォームへ進む</button>
+</div>
+
+<nav class="tabs" id="tabsNav" hidden><button id="t1" class="on">お客様：見積り</button><button id="t3">お客様：進捗確認</button><button id="t2">店側の管理画面</button></nav>
+
+<div id="cust" hidden>
+<h1>うちわ文字<br>お見積り・ご注文</h1>
+<p class="lead" style="font-weight:700;color:var(--ac);font-size:1rem;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px">👉 選ぶたびに、下のプレビューと合計金額が変わります。</p>
+<div class="pv" id="pv"><div id="pvt"></div><span id="pvs"></span><div id="dcanvas"></div></div>
+
+<section><h2>枚数</h2>
+<select id="qtysel"><option value="1">1枚</option><option value="2">2連</option><option value="3">3連</option><option value="0">それ以上（枚数を入力）</option></select>
+<input type="number" id="qty" min="4" value="4" inputmode="numeric" style="display:none"></section>
+
+<section><h2>サイズ</h2><div class="g3" id="size"></div></section>
+
+<section><h2>作成するうちわ文字</h2>
+<input type="text" id="txt" value="みお" maxlength="12">
+<span class="lbl">フォント（実際の仕上がりとは少し異なります）</span>
+<div class="g2" id="fonts"></div></section>
+
+<section><h2>素材と色</h2>
+<span class="lbl">素材の見本（画像はここに差し替えます）</span>
+<div class="g4" id="gal"></div>
+<div id="slots"></div></section>
+
+<section><h2>装飾</h2>
+<span class="lbl">ハート・星（1個 50円、最大20個）</span><select id="decoH"></select>
+<div id="decoArea" style="display:none;margin-top:6px">
+<p class="lbl">上のプレビュー画面に、ハートや星を指で配置できます</p>
+<div style="display:flex;gap:8px;margin-top:8px">
+<button type="button" class="sec" id="addHeart" style="flex:1">🩷 ハート追加</button>
+<button type="button" class="sec" id="addStar" style="flex:1">⭐ 星追加</button>
+</div></div>
+<span class="lbl" style="margin-top:10px">その他の装飾（1個 300円、最大20個）</span><select id="decoO"></select>
+<span class="lbl">持ち込みデザイン（1個 500円、最大20個）</span><select id="decoB"></select>
+</section>
+
+<section><h2>オプション</h2>
+<label class="row"><span><input type="checkbox" id="honor">敬称</span><span class="p">+100円</span></label>
+<span class="lbl">中文字（1文字ごと +500円）</span><input type="number" id="mid" min="0" value="0" inputmode="numeric">
+<span class="lbl">裏面補強<small id="reinfReq" style="color:var(--ac)"></small></span><select id="reinf"></select>
+<label class="row"><span><input type="checkbox" id="rush">お急ぎ（7日以内に発送）</span><span class="p">+1,000円</span></label>
+<label class="row"><span><input type="checkbox" id="nosns">SNS掲載不可</span><span class="p">+1,500円</span></label>
+</section>
+
+<section><h2>配送方法</h2><div id="ship"></div></section>
+
+<section><h2>希望支払い方法</h2><div id="payway"></div></section>
+
+<section><h2>商品使用日</h2>
+<div style="position:relative"><input type="date" id="usedate" style="padding-left:40px"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;background:var(--ac);color:var(--acink);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem">▼</span></div>
+<div id="due" class="oc" style="display:block"></div></section>
+
+<section><h2>お支払い</h2>
+<div class="oc" style="display:block">
+<div style="display:flex;justify-content:space-between"><span>前払金（ご注文時）</span><b id="dep"></b></div>
+<div style="display:flex;justify-content:space-between;margin-top:4px"><span>残額</span><b id="rest"></b></div>
+<small>前払金は、ご注文1件につき一律500円です。制作開始の確約金として、ご注文時にお支払いいただきます。</small>
+</div></section>
+
+<section><h2>お名前</h2><input type="text" id="name" placeholder="フルネーム、またはLINEのお名前">
+<div class="btns"><button class="sec" id="b1">見積りだけ送る</button><button class="pri" id="b2">この内容で注文する</button></div>
+<div id="res" role="status" aria-live="polite"></div>
+</section>
+</div>
+
+<div id="pay" hidden>
+<h1>お支払い方法の選択</h1>
+<p class="lead">ご注文ありがとうございます。前払金のお支払いへお進みください。</p>
+<div class="oc" style="display:block"><div style="display:flex;justify-content:space-between"><span>お支払い金額（前払金）</span><b id="payamt"></b></div></div>
+<div id="paymethods"></div>
+<button class="pri" id="paygo" style="width:100%;margin-top:10px">選択した方法で支払う</button>
+<div id="payres" class="oc" style="display:none"></div>
+</div>
+
+<div id="track" hidden>
+<h1>ご注文の進捗確認</h1>
+<p class="lead">注文確定メールに記載の受付番号を入力してください。</p>
+<input type="text" id="tno" placeholder="例：UW-0231">
+<button class="pri" id="tbtn" style="width:100%">確認する</button>
+<div id="tres" style="display:none"></div>
+</div>
+
+<div id="shop" hidden>
+<h1>注文一覧</h1>
+<p class="lead">AppSheetで作る場合のイメージです（ダミーデータ）。カードをタップすると進捗が切り替わります。</p>
+<div class="chips" id="chips"></div>
+<div id="sum" class="lbl"></div>
+<div id="list"></div>
+</div>
+</main>
+
+<div class="bar" id="bar" hidden><div>
+<div class="tot"><span>合計（税込）</span><b id="total">¥0</b></div>
+<details><summary>内訳を見る</summary><div id="lines"></div></details>
+</div></div>
+
+<script>
+var $=function(id){return document.getElementById(id)},yen=function(n){return "¥"+n.toLocaleString("ja-JP")};
+var SIZES=[["S","うちわにぎりぎり収まる",900],["M","少しだけはみ出す",1200],["L","しっかりはみ出す（30×30cmまで）",1500]];
+var MATS=[["カッティングシート",600,"linear-gradient(135deg,#7dd3fc,#ff7eb6)"],["反射シート",1000,"linear-gradient(135deg,#d1d5db,#f9fafb)"],["蛍光シート",1000,"linear-gradient(135deg,#a3e635,#f472b6)"],["蛍光反射シート",1800,"linear-gradient(135deg,#fb923c,#fde047)"],["グリッターシート",2000,"linear-gradient(135deg,#f9a8d4,#fde68a,#a5f3fc)"],["ホログラムシート",2000,"linear-gradient(135deg,#a5b4fc,#f0abfc,#86efac,#fde047)"],["リトルハートホログラム",2000,"linear-gradient(135deg,#ff7eb6,#a5b4fc,#fde047)"],["リトルスター反射ホログラム",3000,"linear-gradient(135deg,#7dd3fc,#fde047,#ff7eb6)"]];
+function qtyOpts(max){var s="";for(var i=0;i<=max;i++)s+='<option value="'+i+'">'+i+'</option>';return s}
+var REINF=[["なし",0],["厚紙補強",300],["PPシート補強",500]];
+var FONTS=["Hachi Maru Pop","Mochiy Pop One","Dela Gothic One","RocknRoll One","Potta One","Yusei Magic"];
+var COLHEX={"白":"#ffffff","黒":"#222222","ピンク":"#ff7eb6","赤":"#e5322d","青":"#3b82f6","水色":"#7dd3fc","黄":"#ffd93b","紫":"#a855f7",
+"ラズベリーピンク":"#e0218a","チェリーピンク":"#d6336c","ピーチ":"#ffb6a3","ベビーピンク":"#ffd1e6","オーロラ":"#eec9f0","レッド":"#e8342d","オレンジ":"#f2811d","レモンイエロー":"#f5e642","イエロー":"#ffd400","ライトグリーン":"#8ee08a","ライムグリーン":"#a4e63b","グリーン":"#2e8b57","アクアブルー":"#3fc6c6","アイスブルー":"#bfe8f0","サファイアブルー":"#4aa8e0","スカイブルー":"#6fc7ef","ライトブルー":"#7ec8f5","オーシャンブルー":"#1f7fc0","ブルー":"#1a4fd6","ラベンダーパープル":"#c9a6e0","パープル":"#8a3fd6","ブラウン":"#8a4a2a","ゴールド":"#d4af37","ライトグレー":"#b8b8b8","ブラック":"#1a1a1a","ホワイト":"#ffffff","蛍光風ピンク":"#ff3fa0","蛍光イエロー":"#eef23a","蛍光グリーン":"#7dff3a",
+"オペラ":"#e8447a","サニー":"#f08a3c","蛍光風スカイブルー":"#3fd0f0",
+"シルバー":"#c8c8d0","ビビッドオレンジ":"#f2551e","マゼンタピンク":"#e8399e","ロイヤルブルー":"#1830a0","メロンソーダ":"#8fe0a0","エメラルドグリーン":"#1fae82"};
+var DEFAULT_NAMES=["白","黒","ピンク","赤","青","水色","黄","紫"];
+var REFLECT=["ラズベリーピンク","チェリーピンク","ピーチ","ピンク","ベビーピンク","オーロラ","レッド","オレンジ","レモンイエロー","イエロー","ライトグリーン","ライムグリーン","グリーン","アクアブルー","アイスブルー","サファイアブルー","スカイブルー","ライトブルー","オーシャンブルー","ブルー","ラベンダーパープル","パープル","ブラウン","ゴールド","ライトグレー","ブラック","ホワイト","蛍光風ピンク","蛍光イエロー","蛍光グリーン"];
+var FLUOR=["オペラ","ピンク","レッド","サニー","オレンジ","イエロー","グリーン","ブルー","パープル","ホワイト","蛍光風スカイブルー"];
+var HEART=["シルバー","ゴールド","レモンイエロー","イエロー","オレンジ","ビビッドオレンジ","レッド","ベビーピンク","マゼンタピンク","チェリーピンク","パープル","スカイブルー","オーシャンブルー","ブルー","ロイヤルブルー","メロンソーダ","グリーン","エメラルドグリーン","ブラウン","ブラック"];
+var STAR=["蛍光風ピンク","蛍光イエロー","スカイブルー","ホワイト"];
+var COLOR_MAP={1:REFLECT,2:FLUOR,6:HEART,7:STAR};
+function colorNamesFor(v){return v>=0?(COLOR_MAP[v]||DEFAULT_NAMES):[]}
+function colorOpts(names){return '<option value="">選択してください</option>'+names.map(function(n){return '<option value="'+n+'">'+n+'</option>'}).join('')}
+function updateColorSelect(i,keep){
+  var v=+$("m"+i).value,names=colorNamesFor(v),cur=$("c"+i).value;
+  $("c"+i).innerHTML=colorOpts(names);
+  $("c"+i).value=(keep&&names.indexOf(cur)>=0)?cur:"";
+}
+var SL=[["文字","ピンク"],["フチ①",""],["フチ②",""],["フチ③",""]];
+function opts(l,none){return (none?'<option value="-1">'+none+'</option>':'')+l.map(function(x,i){return '<option value="'+i+'">'+x[0]+'（'+yen(x[1])+'）</option>'}).join('')}
+$("fonts").innerHTML=FONTS.map(function(f,i){return '<label class="card ft"><input type="radio" name="fn" value="'+i+'"'+(i==0?' checked':'')+'><span style="font-family:\''+f+'\'"></span><small>'+f+'</small></label>'}).join('');
+$("size").innerHTML=SIZES.map(function(s,i){return '<label class="card"><input type="radio" name="sz" value="'+i+'"'+(i==1?' checked':'')+'><div class="ph" style="background:linear-gradient(135deg,#a7e8ea,#8ec9f0)">見本画像</div><b>'+s[0]+'</b><br><small>'+s[1]+'</small><br>'+yen(s[2])+'</label>'}).join('');
+$("gal").innerHTML=MATS.map(function(m){return '<div style="text-align:center"><div class="ph" style="background:'+m[2]+'">見本画像</div><small>'+m[0].split("（")[0]+'</small></div>'}).join('');
+$("slots").innerHTML=SL.map(function(s,i){return '<div class="slotgrp"><span class="lbl">'+s[0]+'：素材</span><select id="m'+i+'">'+opts(MATS,i?"なし":"")+'</select><span class="lbl">'+s[0]+'：カラー</span><select id="c'+i+'">'+colorOpts(i?[]:DEFAULT_NAMES)+'</select></div>'}).join('');
+SL.forEach(function(s,i){if(s[1])$("c"+i).value=s[1]});
+$("m1").value="-1";$("m2").value="-1";$("m3").value="-1";
+[0,1,2,3].forEach(function(i){$("m"+i).addEventListener("change",function(){updateColorSelect(i);calc()})});
+$("reinf").innerHTML=opts(REINF);
+$("decoH").innerHTML=qtyOpts(20);$("decoO").innerHTML=qtyOpts(20);$("decoB").innerHTML=qtyOpts(20);
+var SHIP=[["通常配送",500],["宅急便",1000],["匿名配送",500]];
+var PAYWAY=[["銀行振込",0],["通常（クレカ等）",0.05],["メルカリ経由",0.10]];
+$("ship").innerHTML=SHIP.map(function(s,i){return '<label class="row"><span><input type="radio" name="ship" value="'+i+'"'+(i==0?' checked':'')+'>'+s[0]+'</span><span class="p">+'+yen(s[1])+'</span></label>'}).join('');
+$("payway").innerHTML=PAYWAY.map(function(p,i){return '<label class="row"><span><input type="radio" name="payway" value="'+i+'"'+(i==0?' checked':'')+'>'+p[0]+'</span><span class="p">手数料'+Math.round(p[1]*100)+'%</span></label>'}).join('');
+var DECO_ITEMS=[];
+function renderDeco(){
+  var c=$("dcanvas");c.innerHTML="";
+  DECO_ITEMS.forEach(function(it,i){
+    var wrap=document.createElement("div");
+    wrap.style.cssText="position:absolute;left:"+it.x+"%;top:"+it.y+"%;transform:translate(-50%,-50%);touch-action:none;pointer-events:auto";
+    var el=document.createElement("div");
+    el.textContent=it.type=="h"?"🩷":"⭐";
+    el.style.cssText="font-size:1.6rem;cursor:grab;line-height:1";
+    var del=document.createElement("button");
+    del.type="button";del.textContent="×";
+    del.style.cssText="position:absolute;top:-8px;right:-10px;width:18px;height:18px;padding:0;border-radius:50%;font-size:.7rem;line-height:1;border:1px solid var(--line);background:var(--panel);color:var(--ink)";
+    del.addEventListener("click",function(ev){ev.stopPropagation();DECO_ITEMS.splice(i,1);renderDeco()});
+    el.addEventListener("pointerdown",function(e){
+      el.setPointerCapture(e.pointerId);
+      var r=c.getBoundingClientRect();
+      function move(ev){
+        var x=Math.min(96,Math.max(4,(ev.clientX-r.left)/r.width*100));
+        var y=Math.min(92,Math.max(8,(ev.clientY-r.top)/r.height*100));
+        it.x=x;it.y=y;wrap.style.left=x+"%";wrap.style.top=y+"%";
+      }
+      function up(){el.removeEventListener("pointermove",move);el.removeEventListener("pointerup",up)}
+      el.addEventListener("pointermove",move);el.addEventListener("pointerup",up);
+    });
+    wrap.appendChild(el);wrap.appendChild(del);c.appendChild(wrap);
+  });
+  var hint=document.createElement("small");hint.style.cssText="position:absolute;left:6px;bottom:4px;color:var(--mut)";
+  hint.textContent=DECO_ITEMS.length?"×で削除できます":"";c.appendChild(hint);
+}
+function addDeco(type){if(DECO_ITEMS.length>=+$("decoH").value)return;DECO_ITEMS.push({type:type,x:30+DECO_ITEMS.length*15%80+10,y:50});renderDeco();calc()}
+$("addHeart").onclick=function(){addDeco("h")};$("addStar").onclick=function(){addDeco("s")};
+$("decoH").addEventListener("change",function(){
+  $("decoArea").style.display=+$("decoH").value>0?"block":"none";
+  while(DECO_ITEMS.length>+$("decoH").value)DECO_ITEMS.pop();
+  renderDeco();calc();
+});
+$("decoO").addEventListener("change",calc);$("decoB").addEventListener("change",calc);
+
+function ring(r,c,k){var s=[];for(var i=0;i<20;i++){var a=i*Math.PI/10;s.push((Math.cos(a)*r*k).toFixed(1)+"px "+(Math.sin(a)*r*k).toFixed(1)+"px 0 "+c)}return s}
+function sty(el,txt,font,fill,c1,c2,c3,k){var sh=[];if(c1)sh=sh.concat(ring(3,c1,k));if(c2)sh=sh.concat(ring(4.5,c2,k),ring(6,c2,k));if(c3)sh=sh.concat(ring(7,c3,k),ring(8.5,c3,k));el.textContent=txt;el.style.fontFamily="'"+font+"',sans-serif";el.style.color=fill;el.style.textShadow=sh.join(",")||"none";var maxR=c3?8.5:(c2?6:(c1?3:0));el.style.letterSpacing=Math.ceil(2*maxR*k+3)+"px"}
+var SUM="";
+function calc(){
+  var L=[],per=0;
+  var qs=+$("qtysel").value,qty=qs>0?qs:Math.max(4,parseInt($("qty").value)||4);
+  function add(l,a,scaled){L.push([l,a,scaled]);per+=a}
+  var szi=+document.querySelector('input[name=sz]:checked').value,sz=SIZES[szi];
+  add("サイズ "+sz[0],sz[2],true);
+  $("reinfReq").textContent=szi>=1?"（M・Lサイズは必須です）":"";
+  var col=function(i){var v=$("c"+i).value;return v?[v,COLHEX[v]||"#999"]:null};
+  var parts=[];
+  SL.forEach(function(s,i){var v=+$("m"+i).value;if(v>=0){var c=col(i);add(s[0]+"："+MATS[v][0].split("（")[0],MATS[v][1],true);parts.push(s[0]+"＝"+MATS[v][0].split("（")[0]+"・"+(c?c[0]:"カラー未選択"))}});
+  var hq=+$("decoH").value,oq=+$("decoO").value,bq=+$("decoB").value;
+  if(hq)add("ハート・星 "+hq+"個",hq*50);if(oq)add("その他の装飾 "+oq+"個",oq*300);if(bq)add("持ち込みデザイン "+bq+"個",bq*500);
+  var dnote=hq&&DECO_ITEMS.length?"（配置："+DECO_ITEMS.map(function(it){return it.type=="h"?"ハート":"星"}).join("・")+"）":"";
+  if($("honor").checked)add("敬称",100);
+  var mid=Math.max(0,parseInt($("mid").value)||0);if(mid)add("中文字 "+mid+"文字",mid*500);
+  var r=REINF[+$("reinf").value];if(r[1])add(r[0],r[1],true);
+  var sub=per*qty;
+  var h=L.map(function(x){var amtText=(x[2]&&qty>=2)?(yen(x[1])+"×"+qty+" "+yen(x[1]*qty)):yen(x[1]);return "<div><span>"+x[0]+"</span><span>"+amtText+"</span></div>"}).join("")+'<div><b>1枚あたり × '+qty+'枚</b><b>'+yen(sub)+'</b></div>';
+  if($("rush").checked){sub+=1000;h+="<div><span>お急ぎ</span><span>"+yen(1000)+"</span></div>"}
+  if($("nosns").checked){sub+=1500;h+="<div><span>SNS掲載不可</span><span>"+yen(1500)+"</span></div>"}
+  var shi=+document.querySelector('input[name=ship]:checked').value,sf=SHIP[shi][1];
+  h+="<div><span>配送："+SHIP[shi][0]+"</span><span>"+yen(sf)+"</span></div>";
+  var pwi=+document.querySelector('input[name=payway]:checked').value,rate=PAYWAY[pwi][1];
+  var fee=Math.round(sub*rate);
+  if(fee)h+="<div><span>お支払い手数料（"+PAYWAY[pwi][0]+"）</span><span>"+yen(fee)+"</span></div>";
+  sub+=sf;
+  $("lines").innerHTML=h;$("total").textContent=yen(sub+fee);
+  var tot=sub+fee,dep=500;
+  $("dep").textContent=yen(dep);$("rest").textContent=yen(tot-dep);
+  var du=$("usedate").value,dm="";
+  if($("rush").checked){dm="お急ぎ希望：ご注文から7日以内に発送します。"}
+  else if(du){var days=Math.ceil((new Date(du)-new Date())/86400000);dm=days>=14?"使用日まで余裕があります。通常納期（お申込み〜2〜3週間目安）でご案内します。":days>=0?"使用日まで"+days+"日です。お急ぎ加工のご検討をおすすめします。":"使用日が過去の日付になっています。日付をご確認ください。"}
+  else{dm="使用日を入力すると、納期の目安が表示されます。"}
+  $("due").textContent=dm;
+  var tx=$("txt").value||"おなまえ",fi=+document.querySelector('input[name=fn]:checked').value;
+  document.querySelectorAll(".ft span").forEach(function(e){e.textContent=tx});
+  var c0=col(0),c1=+$("m1").value>=0?col(1):null,c2=+$("m2").value>=0?col(2):null,c3=+$("m3").value>=0?col(3):null;
+  sty($("pvt"),tx,FONTS[fi],c0?c0[1]:"#999",c1?c1[1]:0,c2?c2[1]:0,c3?c3[1]:0,1);
+  SUM="文字："+tx+"／フォント："+FONTS[fi]+"／サイズ"+sz[0]+"／"+parts.join("、")+dnote;
+  $("pvs").textContent="サイズ"+sz[0]+"｜"+parts.join("｜");
+  return {total:sub+fee,qty:qty}
+}
+document.querySelectorAll("#cust input,#cust select").forEach(function(e){e.addEventListener("input",calc);e.addEventListener("change",calc)});
+$("qtysel").addEventListener("change",function(){$("qty").style.display=$("qtysel").value=="0"?"block":"none"});
+var TRACK={"UW-0231":{s:"制作中",n:"さくら",d:"10/4着予定",note:"シートのカットまで完了しました。"},"UW-0198":{s:"発送済",n:"あかり",d:"9/28着予定",note:"9/25にネコポスで発送しました。"},"UW-0250":{s:"未対応",n:"まゆ",d:"—",note:"ご注文を受け付けました。制作開始までお待ちください。"}};
+$("tbtn").onclick=function(){
+  var k=$("tno").value.trim().toUpperCase(),o=TRACK[k],r=$("tres");
+  r.style.display="block";
+  r.innerHTML=o?('<div class="oc" style="display:flex"><div><b>'+o.n+' 様<span class="st">'+o.s+'</span></b><small>納期：'+o.d+'</small><br>'+o.note+'</div></div>'):'<div class="oc" style="display:flex">受付番号が見つかりません。入力内容をご確認ください。</div>';
+};
+var sending=false;
+var API_URL="https://script.google.com/macros/s/AKfycbx3PVo03y5um0QReMJfq2oNUnnkmc40xuQaGKQOO9y9SUvjukdcjRGFz8uoArnoFW-M8Q/exec";
+function send(kind){var r=calc(),n=$("name").value.trim();
+  for(var i=0;i<SL.length;i++){if(+$("m"+i).value>=0&&!$("c"+i).value){$("res").textContent=SL[i][0]+"のカラーを選択してください。";$("c"+i).focus();return}}
+  if(+document.querySelector('input[name=sz]:checked').value>=1&&+$("reinf").value==0){$("res").textContent="M・Lサイズは裏面補強の選択が必須です。";$("reinf").focus();return}
+  if(!n){$("res").textContent="お名前を入力してください。";$("name").focus();return}
+  if(sending)return;
+  if(!(window.liff&&liff.isLoggedIn())){$("res").textContent="LINEのメニューから開き直してください。（LINEログインを確認できませんでした）";return}
+  sending=true;$("b1").disabled=true;$("b2").disabled=true;
+  $("res").textContent="送信中です…少しお待ちください🩵";
+  var detail=Array.prototype.map.call($("lines").children,function(d){return "・"+d.children[0].textContent+"　"+d.children[1].textContent}).join("\n");
+  var pw=PAYWAY[+document.querySelector('input[name=payway]:checked').value][0];
+  var body={token:liff.getAccessToken(),kind:kind?"order":"quote",name:n,total:r.total,qty:r.qty,usedate:$("usedate").value,
+    summary:SUM+"\n\n【内訳】\n"+detail+"\n\n希望支払い方法："+pw+"\n商品使用日："+($("usedate").value||"未入力")};
+  function done(){sending=false;$("b1").disabled=false;$("b2").disabled=false}
+  fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)})
+  .then(function(x){return x.json()})
+  .then(function(j){
+    done();
+    if(!j.ok){$("res").textContent="送信できませんでした（"+(j.error||"不明なエラー")+"）。時間をおいてもう一度お試しください。";return}
+    var note=j.pushed?"LINEにお送りしました🩵 トーク画面をご確認ください。":"受け付けましたが、LINEへの送信に失敗しました。公式アカウントを友だち追加しているかご確認ください。";
+    if(!kind){$("res").textContent="【お見積り】受付番号："+j.receiptNo+"\n"+note;return}
+    document.querySelector("#pay .lead").textContent="ご注文ありがとうございます（受付番号："+j.receiptNo+"）。"+note+" 前払金のお支払いへお進みください。";
+    $("cust").hidden=true;$("bar").hidden=true;$("pay").hidden=false;
+    $("payamt").textContent=yen(500);
+    var PM=[["クレジットカード決済"],["PayPay"],["コンビニ払い"],["銀行振込"]];
+    $("paymethods").innerHTML=PM.map(function(p,i){return '<label class="row"><span><input type="radio" name="pm" value="'+i+'"'+(i==0?' checked':'')+'>'+p[0]+'</span></label>'}).join('');
+    $("payres").style.display="none";
+  })
+  .catch(function(){done();$("res").textContent="通信に失敗しました。電波の良い場所でもう一度お試しください。"});
+}
+$("paygo").onclick=function(){
+  var PM=["クレジットカード決済","PayPay","コンビニ払い","銀行振込"],i=+document.querySelector('input[name=pm]:checked').value;
+  $("payres").style.display="block";
+  $("payres").innerHTML="<div><b>"+PM[i]+"</b><br>"+["Square／BASEの決済ページに移動します","BASE経由でPayPay払いができます","発行された番号でお近くのコンビニからお支払いいただけます","振込先をご案内します。ご入金確認後に制作を開始します"][i]+"<br><small>※試作ページのため、実際の決済画面へは移動しません。</small></div>";
+};
+$("b1").onclick=function(){send(0)};$("b2").onclick=function(){send(1)};
+
+var ORD=[
+{n:"さくら",k:"注文",t:"みお",f:0,a:"#ff7eb6",b:"#ffffff",c:"#3b82f6",i:"M／グリッター＋蛍光／2枚",p:6300,s:"未対応",d:"10/4着"},
+{n:"りな",k:"注文",t:"Haru",f:3,a:"#ffd93b",b:"#222222",c:0,i:"L／ホログラム／PP補強",p:3300,s:"制作中",d:"10/2着"},
+{n:"まゆ",k:"見積り",t:"ゆうと",f:1,a:"#a855f7",b:"#ffffff",c:0,i:"S／カッティング／敬称",p:1500,s:"未対応",d:"—"},
+{n:"あかり",k:"注文",t:"れん",f:2,a:"#7dd3fc",b:"#3b82f6",c:"#ffffff",i:"M／反射＋蛍光／お急ぎ",p:3200,s:"発送済",d:"9/28着"},
+{n:"ひなた",k:"見積り",t:"そら",f:4,a:"#e5322d",b:"#ffffff",c:0,i:"L／蛍光反射／装飾あり",p:3100,s:"未対応",d:"—"}];
+var STS=["未対応","制作中","発送済"],FL="すべて",FS=["すべて","注文","見積り"].concat(STS);
+function shop(){
+  $("chips").innerHTML=FS.map(function(f){return '<button class="chip'+(f==FL?' on':'')+'" data-f="'+f+'">'+f+'</button>'}).join('');
+  var v=ORD.filter(function(o){return FL=="すべて"||o.k==FL||o.s==FL});
+  $("sum").textContent=v.length+"件｜注文 "+v.filter(function(o){return o.k=="注文"}).length+"件・"+yen(v.filter(function(o){return o.k=="注文"}).reduce(function(a,o){return a+o.p},0));
+  $("list").innerHTML=v.map(function(o){var j=ORD.indexOf(o);return '<button class="oc" data-j="'+j+'"><span class="th" id="th'+j+'"></span><div><b>'+o.n+' 様<span class="st">'+o.s+'</span></b><small>'+o.k+'｜'+o.i+'</small><br><span>'+yen(o.p)+'</span> <small>'+o.d+'</small></div></button>'}).join('');
+  ORD.forEach(function(o,j){var e=$("th"+j);if(e)sty(e,o.t,FONTS[o.f],o.a,o.b,o.c,0,.45)})
+}
+$("chips").onclick=function(e){var f=e.target.getAttribute("data-f");if(f){FL=f;shop()}};
+$("list").onclick=function(e){var b=e.target.closest(".oc");if(b){var o=ORD[+b.getAttribute("data-j")];o.s=STS[(STS.indexOf(o.s)+1)%3];shop()}};
+function tab(n){$("pay").hidden=true;$("cust").hidden=n!=1;$("bar").hidden=n!=1;$("track").hidden=n!=3;$("shop").hidden=n!=2;$("t1").className=n==1?"on":"";$("t3").className=n==3?"on":"";$("t2").className=n==2?"on":"";if(n==2)shop()}
+$("t1").onclick=function(){tab(1)};$("t2").onclick=function(){tab(2)};$("t3").onclick=function(){tab(3)};
+$("introOk").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false;tab(1)};
+calc();
+</script>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+// ここから下がLIFF連携用（Claudeのartifact上では動作しません。Apps ScriptのWebアプリで試してください）
+var LIFF_ID="2011761789-hZMl79mI";
+var LIFF_USER_ID=null;
+window.addEventListener("pageshow",function(e){if(e.persisted&&$("res"))$("res").textContent=""});
+function dg(t){var d=$("diag");if(d)d.textContent+=t+"\n"}
+if(!window.liff){dg("SDK：読み込み失敗（LIFFが使えません）")}
+if(window.liff){
+  try{
+    dg("SDK：OK v"+liff.getVersion());
+    dg("iframe内："+(window.top!==window?"はい":"いいえ"));
+    dg("場所："+location.origin+location.pathname);
+    dg("UA："+((navigator.userAgent.match(/Line\/[\d.]+( LIFF)?/)||["Lineの記述なし"])[0]));
+  }catch(e){dg("診断エラー："+e.message)}
+  liff.init({liffId:LIFF_ID}).then(function(){
+    try{dg("init：成功 / isInClient="+liff.isInClient()+" / isLoggedIn="+liff.isLoggedIn()+" / OS="+liff.getOS())}catch(e){}
+    if(liff.isLoggedIn()){sessionStorage.removeItem("liffLoginTried");if($("res"))$("res").textContent="";return liff.getProfile()}
+    if(liff.isInClient()){console.warn("LIFF: LINEアプリ内なのに未ログイン判定。liff.login()は呼ばずスキップします");return null}
+    if(sessionStorage.getItem("liffLoginTried")){
+      console.warn("LIFF: ログインを試みましたが状態が引き継がれませんでした。ループ防止のため停止します");
+      var b=$("res");if(b)b.textContent="LINEログインがうまく引き継がれませんでした。LINEアプリのトーク内からもう一度開き直してください。";
+      return null;
+    }
+    sessionStorage.setItem("liffLoginTried","1");liff.login();return null;
+  }).then(function(p){
+    dg(p?"userId取得：成功":"userId取得：なし");if(p){LIFF_USER_ID=p.userId;console.log("LINEユーザーID取得成功：",LIFF_USER_ID)}
+  }).catch(function(e){console.error("LIFF init error",e);dg("initエラー："+(e&&e.message?e.message:e))});
+}
+</script>
+</body>
+</html>
