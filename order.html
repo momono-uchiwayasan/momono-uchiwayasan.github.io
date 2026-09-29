@@ -394,7 +394,7 @@ function send(kind){var r=calc(),n=$("name").value.trim();
   $("res").textContent="送信中です…少しお待ちください🩵";
   var detail=Array.prototype.map.call($("lines").children,function(d){return "・"+d.children[0].textContent+"　"+d.children[1].textContent}).join("\n");
   var pw=PAYWAY[+document.querySelector('input[name=payway]:checked').value][0];
-  function proceed(previewImg){
+  function proceed(previewImg,dbg){
   var body={token:liff.getAccessToken(),kind:kind?"order":"quote",name:n,total:r.total,qty:r.qty,usedate:$("usedate").value,designImage:DESIGN_IMG,previewImage:previewImg,
     summary:SUM+"\n\n【内訳】\n"+detail+"\n\n希望支払い方法："+pw+"\n商品使用日："+($("usedate").value||"未入力")};
   function done(){sending=false;$("b1").disabled=false;$("b2").disabled=false}
@@ -404,8 +404,9 @@ function send(kind){var r=calc(),n=$("name").value.trim();
     done();
     if(!j.ok){$("res").textContent=(j.error==="maintenance")?"只今メンテナンス中のため、一時的に受付を停止しています。しばらくしてからもう一度お試しください🙏":"送信できませんでした（"+(j.error||"不明なエラー")+"）。時間をおいてもう一度お試しください。";return}
     var note=j.pushed?"LINEにお送りしました🩵 トーク画面をご確認ください。":"受け付けましたが、LINEへの送信に失敗しました。公式アカウントを友だち追加しているかご確認ください。";
-    if(!kind){$("res").textContent="【お見積り】受付番号："+j.receiptNo+"\n"+note;return}
-    document.querySelector("#pay .lead").textContent="ご注文ありがとうございます（受付番号："+j.receiptNo+"）。"+note+" 前払金のお支払いへお進みください。";
+    var dbgLine=dbg?("\n[診断："+dbg+"]"):"";
+    if(!kind){$("res").textContent="【お見積り】受付番号："+j.receiptNo+"\n"+note+dbgLine;return}
+    document.querySelector("#pay .lead").textContent="ご注文ありがとうございます（受付番号："+j.receiptNo+"）。"+note+" 前払金のお支払いへお進みください。"+dbgLine;
     $("cust").hidden=true;$("bar").hidden=true;$("pay").hidden=false;
     $("payamt").textContent=yen(500);
     var PM=[["クレジットカード決済"],["PayPay"],["コンビニ払い"],["銀行振込"]];
@@ -415,8 +416,8 @@ function send(kind){var r=calc(),n=$("name").value.trim();
   .catch(function(){done();$("res").textContent="通信に失敗しました。電波の良い場所でもう一度お試しください。"});
   }
   if(window.html2canvas){
-    html2canvas($("pv"),{backgroundColor:null,useCORS:true}).then(function(c){proceed(c.toDataURL("image/jpeg",0.85))}).catch(function(){proceed(null)});
-  }else{proceed(null)}
+    html2canvas($("pv"),{backgroundColor:null,useCORS:true}).then(function(c){proceed(c.toDataURL("image/jpeg",0.85))}).catch(function(err){proceed(null,"撮影失敗:"+(err&&err.message||err))});
+  }else{proceed(null,"html2canvas未読込")}
 }
 $("paygo").onclick=function(){
   var PM=["クレジットカード決済","PayPay","コンビニ払い","銀行振込"],i=+document.querySelector('input[name=pm]:checked').value;
