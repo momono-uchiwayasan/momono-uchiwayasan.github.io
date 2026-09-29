@@ -383,7 +383,7 @@ $("tbtn").onclick=function(){
   }).catch(function(){r.innerHTML='<div class="oc" style="display:flex">通信に失敗しました。もう一度お試しください。</div>'});
 };
 var sending=false;
-var API_URL="https://script.google.com/macros/s/AKfycbx3PVo03y5um0QReMJfq2oNUnnkmc40xuQaGKQOO9y9SUvjukdcjRGFz8uoArnoFW-M8Q/exec";
+var API_URL="https://script.google.com/macros/s/AKfycbyaIpRC5ZUOv_uS4xlk_YqUCeeHuc26_oZ7DenLjwy7hYczbALxqnn_7zIy27AqSe5cGA/exec";
 function send(kind){var r=calc(),n=$("name").value.trim();
   for(var i=0;i<SL.length;i++){if(+$("m"+i).value>=0&&!$("c"+i).value){$("res").textContent=SL[i][0]+"のカラーを選択してください。";$("c"+i).focus();return}}
   if(+document.querySelector('input[name=sz]:checked').value>=1&&+$("reinf").value==0){$("res").textContent="M・Lサイズは裏面補強の選択が必須です。";$("reinf").focus();return}
