@@ -105,10 +105,12 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 <div id="cust" hidden>
 <h1>うちわ文字<br>お見積り・ご注文</h1>
 <p class="lead" style="font-weight:700;color:var(--ac);font-size:1rem;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px">👉 選ぶたびに、下のプレビューと合計金額が変わります。</p>
-<div class="pv" id="pv"><div id="pvt"></div><span id="pvs"></span><div id="dcanvas"></div></div>
+<div class="pv" id="pv"><div id="pvt"></div><span id="pvMid" style="position:absolute;left:20%;top:70%;font-size:1.3rem;cursor:grab;touch-action:none"></span><span id="pvHonor" style="position:absolute;left:70%;top:70%;font-size:.65rem;cursor:grab;touch-action:none"></span><span id="pvs"></span><div id="dcanvas"></div></div>
+
+<section><h2>LINEのお名前</h2><input type="text" id="name" placeholder="フルネーム、またはLINEのお名前"></section>
 
 <section><h2>作成するうちわ文字</h2>
-<input type="text" id="txt" value="みお" maxlength="12">
+<input type="text" id="txt" value="見本" maxlength="12">
 <span class="lbl">フォント（実際の仕上がりとは少し異なります）</span>
 <div class="g2" id="fonts"></div></section>
 
@@ -145,8 +147,16 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 </section>
 
 <section><h2>オプション</h2>
-<label class="row"><span><input type="checkbox" id="honor">敬称</span><span class="p">+100円</span></label>
-<span class="lbl">中文字（1文字ごと +500円）</span><input type="number" id="mid" min="0" value="0" inputmode="numeric">
+<label class="row"><span><input type="checkbox" id="honor">敬称をつける</span><span class="p">+100円</span></label>
+<div id="honorArea" style="display:none;margin:6px 0">
+<input type="text" id="honorTxt" maxlength="4" placeholder="例：様、くん、ちゃん">
+<div class="g2"><div><span class="lbl">文字色</span><select id="honorC"></select></div><div><span class="lbl">フチ色</span><select id="honorB"></select></div></div>
+</div>
+<span class="lbl" style="margin-top:10px">中文字（1文字ごと +500円）</span>
+<input type="text" id="mid" maxlength="10" placeholder="例：へ">
+<div id="midArea" style="display:none;margin:6px 0">
+<div class="g2"><div><span class="lbl">文字色</span><select id="midC"></select></div><div><span class="lbl">フチ色</span><select id="midB"></select></div></div>
+</div>
 <span class="lbl">裏面補強<small id="reinfReq" style="color:var(--ac)"></small></span><select id="reinf"></select>
 <label class="row"><span><input type="checkbox" id="rush">お急ぎ（7日以内に発送）</span><span class="p">+1,000円</span></label>
 <label class="row"><span><input type="checkbox" id="nosns">SNS掲載不可</span><span class="p">+1,500円</span></label>
@@ -167,19 +177,18 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 <small>前払金は、ご注文1件につき一律500円です。制作開始の確約金として、ご注文時にお支払いいただきます。</small>
 </div></section>
 
-<section><h2>お名前</h2><input type="text" id="name" placeholder="フルネーム、またはLINEのお名前">
-<div class="btns"><button class="sec" id="b1">見積りだけ送る</button><button class="pri" id="b2">この内容で注文する</button></div>
+<section>
+<div class="btns"><button class="sec" id="b1">お見積りだけ送る</button><button class="pri" id="b2">この内容で注文する</button></div>
 <div id="res" role="status" aria-live="polite"></div>
 </section>
 </div>
 
 <div id="pay" hidden>
-<h1>お支払い方法の選択</h1>
+<h1>お支払いのご案内</h1>
 <p class="lead">ご注文ありがとうございます。前払金のお支払いへお進みください。</p>
 <div class="oc" style="display:block"><div style="display:flex;justify-content:space-between"><span>お支払い金額（前払金）</span><b id="payamt"></b></div></div>
-<div id="paymethods"></div>
-<button class="pri" id="paygo" style="width:100%;margin-top:10px">選択した方法で支払う</button>
-<div id="payres" class="oc" style="display:none"></div>
+<div id="paymethods" class="oc" style="display:block"></div>
+<div class="oc" style="display:block"><small>残額のお支払いは、銀行振込・メルカリ・ラクマ・ヤフフリ・BASEのいずれかでご案内します。詳しくは制作完了時に個別にご連絡しますね🩵</small></div>
 </div>
 
 <div id="track" hidden>
@@ -207,6 +216,31 @@ var COLHEX={"白":"#ffffff","黒":"#222222","ピンク":"#ff7eb6","赤":"#e5322d
 "オペラ":"#e8447a","サニー":"#f08a3c","蛍光風スカイブルー":"#3fd0f0",
 "シルバー":"#c8c8d0","ビビッドオレンジ":"#f2551e","マゼンタピンク":"#e8399e","ロイヤルブルー":"#1830a0","メロンソーダ":"#8fe0a0","エメラルドグリーン":"#1fae82"};
 var DEFAULT_NAMES=["白","黒","ピンク","赤","青","水色","黄","紫"];
+function col2(name){return name?[name,COLHEX[name]||"#999"]:null}
+function styMini(el,text,font,fill,border,radii,spacing){
+  var sh=[];if(border)radii.forEach(function(r){sh=sh.concat(ring(r,border,.5))});
+  el.textContent=text;el.style.fontFamily="'"+font+"',sans-serif";el.style.color=fill;
+  el.style.textShadow=sh.join(",")||"none";el.style.letterSpacing=spacing;
+}
+function makeDraggable(el){
+  el.addEventListener("pointerdown",function(e){
+    var pvEl=$("pv");el.setPointerCapture(e.pointerId);
+    var r=pvEl.getBoundingClientRect();
+    function move(ev){
+      var x=Math.min(94,Math.max(4,(ev.clientX-r.left)/r.width*100));
+      var y=Math.min(90,Math.max(8,(ev.clientY-r.top)/r.height*100));
+      el.style.left=x+"%";el.style.top=y+"%";
+    }
+    function up(){el.removeEventListener("pointermove",move);el.removeEventListener("pointerup",up)}
+    el.addEventListener("pointermove",move);el.addEventListener("pointerup",up);
+  });
+}
+makeDraggable($("pvMid"));makeDraggable($("pvHonor"));
+["honorC","honorB","midC","midB"].forEach(function(id){$(id).innerHTML=colorOpts(DEFAULT_NAMES)});
+$("honor").addEventListener("change",function(){$("honorArea").style.display=$("honor").checked?"block":"none";calc()});
+$("honorTxt").addEventListener("input",calc);$("honorC").addEventListener("change",calc);$("honorB").addEventListener("change",calc);
+$("mid").addEventListener("input",function(){$("midArea").style.display=$("mid").value.trim()?"block":"none";calc()});
+$("midC").addEventListener("change",calc);$("midB").addEventListener("change",calc);
 var REFLECT=["ラズベリーピンク","チェリーピンク","ピーチ","ピンク","ベビーピンク","オーロラ","レッド","オレンジ","レモンイエロー","イエロー","ライトグリーン","ライムグリーン","グリーン","アクアブルー","アイスブルー","サファイアブルー","スカイブルー","ライトブルー","オーシャンブルー","ブルー","ラベンダーパープル","パープル","ブラウン","ゴールド","ライトグレー","ブラック","ホワイト","蛍光風ピンク","蛍光イエロー","蛍光グリーン"];
 var FLUOR=["オペラ","ピンク","レッド","サニー","オレンジ","イエロー","グリーン","ブルー","パープル","ホワイト","蛍光風スカイブルー"];
 var HEART=["シルバー","ゴールド","レモンイエロー","イエロー","オレンジ","ビビッドオレンジ","レッド","ベビーピンク","マゼンタピンク","チェリーピンク","パープル","スカイブルー","オーシャンブルー","ブルー","ロイヤルブルー","メロンソーダ","グリーン","エメラルドグリーン","ブラウン","ブラック"];
@@ -231,9 +265,9 @@ $("m1").value="-1";$("m2").value="-1";$("m3").value="-1";
 $("reinf").innerHTML=opts(REINF);
 $("decoH").innerHTML=qtyOpts(20);$("decoO").innerHTML=qtyOpts(20);$("decoB").innerHTML=qtyOpts(20);
 var SHIP=[["通常配送",500],["宅急便",1000],["匿名配送",500]];
-var PAYWAY=[["銀行振込",0],["通常（クレカ等）",0.05],["メルカリ経由",0.10]];
+var PAYWAY=[["銀行振込",0],["PayPay",0],["メルペイ",0],["楽天ペイ",0]];
 $("ship").innerHTML=SHIP.map(function(s,i){return '<label class="row"><span><input type="radio" name="ship" value="'+i+'"'+(i==0?' checked':'')+'>'+s[0]+'</span><span class="p">+'+yen(s[1])+'</span></label>'}).join('');
-$("payway").innerHTML=PAYWAY.map(function(p,i){return '<label class="row"><span><input type="radio" name="payway" value="'+i+'"'+(i==0?' checked':'')+'>'+p[0]+'</span><span class="p">手数料'+Math.round(p[1]*100)+'%</span></label>'}).join('');
+$("payway").innerHTML=PAYWAY.map(function(p,i){return '<label class="row"><span><input type="radio" name="payway" value="'+i+'"'+(i==0?' checked':'')+'>'+p[0]+'</span></label>'}).join('');
 var DECO_ITEMS=[];
 function renderDeco(){
   var c=$("dcanvas");c.innerHTML="";
@@ -263,7 +297,7 @@ function renderDeco(){
   var hint=document.createElement("small");hint.style.cssText="position:absolute;left:6px;bottom:4px;color:var(--mut)";
   hint.textContent=DECO_ITEMS.length?"×で削除できます":"";c.appendChild(hint);
 }
-function cap(type){return type=="o"?+$("decoO").value:+$("decoH").value}
+function cap(type){return type=="o"?(+$("decoO").value+ +$("decoB").value):+$("decoH").value}
 function countOf(type){return DECO_ITEMS.filter(function(it){return type=="o"?it.type=="o":it.type!="o"}).length}
 function addDeco(type){if(countOf(type)>=cap(type))return;DECO_ITEMS.push({type:type,x:30+DECO_ITEMS.length*15%80+10,y:50});renderDeco();calc()}
 $("addHeart").onclick=function(){addDeco("h")};$("addStar").onclick=function(){addDeco("s")};$("addCircle").onclick=function(){addDeco("o")};
@@ -273,11 +307,16 @@ $("decoH").addEventListener("change",function(){
   renderDeco();calc();
 });
 $("decoO").addEventListener("change",function(){
-  $("decoAreaO").style.display=+$("decoO").value>0?"block":"none";
+  $("decoAreaO").style.display=(+$("decoO").value>0||+$("decoB").value>0)?"block":"none";
   while(countOf("o")>+$("decoO").value){for(var i=DECO_ITEMS.length-1;i>=0;i--){if(DECO_ITEMS[i].type=="o"){DECO_ITEMS.splice(i,1);break}}}
   renderDeco();calc();
 });
-$("decoB").addEventListener("change",function(){$("imgArea").style.display=+$("decoB").value>0?"block":"none";calc()});
+$("decoB").addEventListener("change",function(){
+  $("imgArea").style.display=+$("decoB").value>0?"block":"none";
+  $("decoAreaO").style.display=(+$("decoO").value>0||+$("decoB").value>0)?"block":"none";
+  while(countOf("o")>cap("o")){for(var i=DECO_ITEMS.length-1;i>=0;i--){if(DECO_ITEMS[i].type=="o"){DECO_ITEMS.splice(i,1);break}}}
+  renderDeco();calc();
+});
 var DESIGN_IMG=null;
 $("designFile").addEventListener("change",function(){
   var f=this.files[0];if(!f)return;
@@ -312,7 +351,12 @@ function calc(){
   if(hq)add("ハート・星 "+hq+"個",hq*50);if(oq)add("その他の装飾 "+oq+"個",oq*300);if(bq)add("持ち込みデザイン "+bq+"個",bq*500);
   var dnote=DECO_ITEMS.length?"（配置："+DECO_ITEMS.map(function(it){return it.type=="h"?"ハート":it.type=="s"?"星":"位置マーク"}).join("・")+"）":"";
   if($("honor").checked)add("敬称",100);
-  var mid=Math.max(0,parseInt($("mid").value)||0);if(mid)add("中文字 "+mid+"文字",mid*500);
+  var midN=moraCount($("mid").value.trim());if(midN)add("中文字 "+midN+"文字",midN*500);
+  var fnNow=FONTS[+document.querySelector('input[name=fn]:checked').value];
+  var hc=col2($("honorC").value),hb=col2($("honorB").value);
+  styMini($("pvHonor"),$("honor").checked?$("honorTxt").value:"",fnNow,hc?hc[1]:"#999",hb?hb[1]:0,[2.5,3.5],"0.015em");
+  var mc=col2($("midC").value),mb=col2($("midB").value);
+  styMini($("pvMid"),$("mid").value.trim(),fnNow,mc?mc[1]:"#999",mb?mb[1]:0,[3,4.5],"0.03em");
   var r=REINF[+$("reinf").value];if(r[1])add(r[0],r[1],true);
   var sub=per*qty;
   var h=L.map(function(x){var amtText=(qty>=2)?(yen(x[1])+"×"+qty+" "+yen(x[1]*qty)):yen(x[1]);return "<div><span>"+x[0]+"</span><span>"+amtText+"</span></div>"}).join("")+'<div><b>1枚あたり × '+qty+'枚</b><b>'+yen(sub)+'</b></div>';
@@ -391,9 +435,8 @@ function send(kind){var r=calc(),n=$("name").value.trim();
     document.querySelector("#pay .lead").textContent="ご注文ありがとうございます（受付番号："+j.receiptNo+"）。"+note+" 前払金のお支払いへお進みください。"+dbgLine;
     $("cust").hidden=true;$("bar").hidden=true;$("pay").hidden=false;
     $("payamt").textContent=yen(500);
-    var PM=[["クレジットカード決済"],["PayPay"],["コンビニ払い"],["銀行振込"]];
-    $("paymethods").innerHTML=PM.map(function(p,i){return '<label class="row"><span><input type="radio" name="pm" value="'+i+'"'+(i==0?' checked':'')+'>'+p[0]+'</span></label>'}).join('');
-    $("payres").style.display="none";
+    var PWNOTE={"銀行振込":"振込先をご案内しますので、ご入金確認後に制作を開始します。","PayPay":"こちらのPayPayへ前払金をお送りください。","メルペイ":"こちらのメルペイへ前払金をお送りください。","楽天ペイ":"こちらの楽天ペイへ前払金をお送りください。"};
+    $("paymethods").innerHTML="<b>選択したお支払い方法："+pw+"</b><br><small>"+(PWNOTE[pw]||"")+" 送り先は追ってLINEでご案内します。</small>";
   })
   .catch(function(){done();$("res").textContent="通信に失敗しました。電波の良い場所でもう一度お試しください。"});
   }
@@ -401,11 +444,6 @@ function send(kind){var r=calc(),n=$("name").value.trim();
     html2canvas($("pv"),{backgroundColor:"#ffffff",useCORS:true}).then(function(c){proceed(c.toDataURL("image/png"))}).catch(function(err){proceed(null,"撮影失敗:"+(err&&err.message||err))});
   }else{proceed(null,"html2canvas未読込")}
 }
-$("paygo").onclick=function(){
-  var PM=["クレジットカード決済","PayPay","コンビニ払い","銀行振込"],i=+document.querySelector('input[name=pm]:checked').value;
-  $("payres").style.display="block";
-  $("payres").innerHTML="<div><b>"+PM[i]+"</b><br>"+["Square／BASEの決済ページに移動します","BASE経由でPayPay払いができます","発行された番号でお近くのコンビニからお支払いいただけます","振込先をご案内します。ご入金確認後に制作を開始します"][i]+"<br><small>※試作ページのため、実際の決済画面へは移動しません。</small></div>";
-};
 $("b1").onclick=function(){send(0)};$("b2").onclick=function(){send(1)};
 
 function tab(n){$("pay").hidden=true;$("cust").hidden=n!=1;$("bar").hidden=n!=1;$("track").hidden=n!=3;$("t1").className=n==1?"on":"";$("t3").className=n==3?"on":"";if(n==3)loadMyOrders();}
