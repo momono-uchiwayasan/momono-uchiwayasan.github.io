@@ -95,8 +95,8 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 ・ご希望の使用日に余裕を持った納期をお選びください。<br>
 <b>☑️上記をご確認・ご了承のうえ、お見積りへお進みください🩵</b>
 </small></div>
-<button class="pri" id="introOk" style="width:100%;margin-top:14px">OK・注文フォームへ進む</button>
-<button class="sec" id="introTrack" style="width:100%;margin-top:10px">📦 進捗を確認する</button>
+<button class="pri" id="introOk" style="width:100%;margin-top:14px">【OK】お見積り・注文に進む</button>
+<button class="sec" id="introTrack" style="width:100%;margin-top:10px">📦【注文済み】進捗を確認する</button>
 </div>
 
 <nav class="tabs" id="tabsNav" hidden><button id="t1" class="on">お客様：見積り</button><button id="t3">お客様：進捗確認</button></nav>
@@ -183,10 +183,8 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 
 <div id="track" hidden>
 <h1>ご注文の進捗確認</h1>
-<p class="lead">注文確定メールに記載の受付番号を入力してください。</p>
-<input type="text" id="tno" placeholder="例：UW-0231">
-<button class="pri" id="tbtn" style="width:100%">確認する</button>
-<div id="tres" style="display:none"></div>
+<p class="lead">あなたの過去のご注文・お見積りを表示します。</p>
+<div id="tres"></div>
 </div>
 
 </main>
@@ -288,7 +286,7 @@ $("designFile").addEventListener("change",function(){
     var mx=1000,w=img.width,h=img.height;
     if(w>mx||h>mx){var k=mx/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
     var c=document.createElement("canvas");c.width=w;c.height=h;
-    c.getContext("2d").drawImage(img,0,0,w,h);
+    var ctx=c.getContext("2d");ctx.fillStyle="#ffffff";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
     DESIGN_IMG=c.toDataURL("image/jpeg",0.7);
     $("imgPreview").innerHTML='<div style="position:relative;display:inline-block"><img src="'+DESIGN_IMG+'" style="max-width:140px;border-radius:10px;border:1.5px solid var(--line);display:block"><button type="button" id="designCancel" style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;padding:0;border-radius:50%;background:var(--ac);color:var(--acink);border:none;font-size:.85rem">✕</button></div>';
     $("designCancel").onclick=function(){DESIGN_IMG=null;$("imgPreview").innerHTML="";$("designFile").value=""};
@@ -356,15 +354,15 @@ $("txt").addEventListener("input",function(){
   else{$("qtysel").value="0";$("qty").style.display="block";$("qty").value=n}
   calc();
 });
-$("tbtn").onclick=function(){
-  var k=$("tno").value.trim(),r=$("tres");
-  if(!k)return;
-  r.style.display="block";r.innerHTML='<div class="oc" style="display:flex">確認中…</div>';
-  fetch(API_URL+"?no="+encodeURIComponent(k)).then(function(x){return x.json()}).then(function(j){
-    if(!j.found){r.innerHTML='<div class="oc" style="display:flex">受付番号が見つかりません。入力内容をご確認ください。</div>';return}
-    r.innerHTML='<div class="oc" style="display:flex"><div><b>'+j.name+' 様<span class="st">'+j.status+'</span></b><small>種別：'+j.kind+'／使用希望日：'+(j.usedate||"—")+'</small></div></div>';
+function loadMyOrders(){
+  var r=$("tres");
+  if(!(window.liff&&liff.isLoggedIn())){r.innerHTML='<div class="oc" style="display:flex">LINEから開くと、ご注文の履歴を確認できます。</div>';return}
+  r.innerHTML='<div class="oc" style="display:flex">確認中…</div>';
+  fetch(API_URL+"?my=1&token="+encodeURIComponent(liff.getAccessToken())).then(function(x){return x.json()}).then(function(j){
+    if(!j.ok||!j.list||!j.list.length){r.innerHTML='<div class="oc" style="display:flex">まだご注文・お見積りの履歴がありません。</div>';return}
+    r.innerHTML=j.list.map(function(o){return '<div class="oc" style="display:flex;margin-bottom:8px"><div><b>'+o.no+'<span class="st">'+o.status+'</span></b><small>種別：'+o.kind+'／合計：¥'+Number(o.total).toLocaleString()+'（'+o.qty+'枚）／使用希望日：'+(o.usedate||"—")+'</small></div></div>'}).join('');
   }).catch(function(){r.innerHTML='<div class="oc" style="display:flex">通信に失敗しました。もう一度お試しください。</div>'});
-};
+}
 var sending=false;
 var API_URL="https://script.google.com/macros/s/AKfycbyaIpRC5ZUOv_uS4xlk_YqUCeeHuc26_oZ7DenLjwy7hYczbALxqnn_7zIy27AqSe5cGA/exec";
 function send(kind){var r=calc(),n=$("name").value.trim();
@@ -409,7 +407,7 @@ $("paygo").onclick=function(){
 };
 $("b1").onclick=function(){send(0)};$("b2").onclick=function(){send(1)};
 
-function tab(n){$("pay").hidden=true;$("cust").hidden=n!=1;$("bar").hidden=n!=1;$("track").hidden=n!=3;$("t1").className=n==1?"on":"";$("t3").className=n==3?"on":""}
+function tab(n){$("pay").hidden=true;$("cust").hidden=n!=1;$("bar").hidden=n!=1;$("track").hidden=n!=3;$("t1").className=n==1?"on":"";$("t3").className=n==3?"on":"";if(n==3)loadMyOrders();}
 $("t1").onclick=function(){tab(1)};$("t3").onclick=function(){tab(3)};
 $("introOk").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false;tab(1)};
 $("introTrack").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false;tab(3)};
@@ -434,6 +432,7 @@ if(window.liff){
   liff.init({liffId:LIFF_ID}).then(function(){
     try{dg("init：成功 / isInClient="+liff.isInClient()+" / isLoggedIn="+liff.isLoggedIn()+" / OS="+liff.getOS())}catch(e){}
     if(liff.isLoggedIn()){sessionStorage.removeItem("liffLoginTried");if($("res"))$("res").textContent="";return liff.getProfile()}
+    // ※お名前の自動入力はこの下のthenで行っています
     if(liff.isInClient()){console.warn("LIFF: LINEアプリ内なのに未ログイン判定。liff.login()は呼ばずスキップします");return null}
     if(sessionStorage.getItem("liffLoginTried")){
       console.warn("LIFF: ログインを試みましたが状態が引き継がれませんでした。ループ防止のため停止します");
@@ -442,7 +441,7 @@ if(window.liff){
     }
     sessionStorage.setItem("liffLoginTried","1");liff.login();return null;
   }).then(function(p){
-    dg(p?"userId取得：成功":"userId取得：なし");if(p){LIFF_USER_ID=p.userId;console.log("LINEユーザーID取得成功：",LIFF_USER_ID)}
+    dg(p?"userId取得：成功":"userId取得：なし");if(p){LIFF_USER_ID=p.userId;console.log("LINEユーザーID取得成功：",LIFF_USER_ID);if($("name")&&!$("name").value&&p.displayName)$("name").value=p.displayName}
   }).catch(function(e){console.error("LIFF init error",e);dg("initエラー："+(e&&e.message?e.message:e))});
 }
 </script>
