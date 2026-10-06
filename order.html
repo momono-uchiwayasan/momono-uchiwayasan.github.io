@@ -249,7 +249,22 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 <script>
 var $=function(id){return document.getElementById(id)},yen=function(n){return "¥"+n.toLocaleString("ja-JP")};
 var SIZES=[["S","うちわにぎりぎり収まる",900],["M","少しだけはみ出す",1200],["L","しっかりはみ出す（30×30cmまで）",1500]];
-var MATS=[["カッティングシート",600,"linear-gradient(135deg,#7dd3fc,#ff7eb6)"],["反射シート",1000,"linear-gradient(135deg,#d1d5db,#f9fafb)"],["蛍光シート",1000,"linear-gradient(135deg,#a3e635,#f472b6)"],["蛍光反射シート",1800,"linear-gradient(135deg,#fb923c,#fde047)"],["グリッターシート",2000,"linear-gradient(135deg,#f9a8d4,#fde68a,#a5f3fc)"],["ホログラムシート",2000,"linear-gradient(135deg,#a5b4fc,#f0abfc,#86efac,#fde047)"],["リトルハートホログラム",2000,"linear-gradient(135deg,#ff7eb6,#a5b4fc,#fde047)"],["リトルスター反射ホログラム",3000,"linear-gradient(135deg,#7dd3fc,#fde047,#ff7eb6)"],["クリスタルホログラム",2500,"linear-gradient(135deg,#e5e7ff,#ffd6f5,#fff6c9)"],["スパークルホログラム",2500,"linear-gradient(135deg,#ffffff,#ffe2f0,#d9e8ff)"]];
+var MATS=[
+["カッティングシート",600,"linear-gradient(135deg,#7dd3fc,#ff7eb6)"],
+["蛍光シート",1000,"linear-gradient(135deg,#a3e635,#f472b6)"],
+["蛍光反射シート",1800,"linear-gradient(135deg,#fb923c,#fde047)"],
+["反射シート",1500,"linear-gradient(135deg,#d1d5db,#f9fafb)"],
+["高輝度反射シート",2500,"linear-gradient(135deg,#e8342d,#c7d91e,#1a4fd6)"],
+["グリッター①",2000,"linear-gradient(135deg,#f9a8d4,#fde68a,#a5f3fc)"],
+["グリッター②",2000,"linear-gradient(135deg,#a5f3fc,#f9a8d4,#fde68a)"],
+["ホログラム(ハート)",2000,"linear-gradient(135deg,#ff7eb6,#fde047,#a5b4fc)"],
+["ホログラム(リトルハート)",2000,"linear-gradient(135deg,#ff7eb6,#a5b4fc,#fde047)"],
+["ホログラム(リトルスター)",2000,"linear-gradient(135deg,#7dd3fc,#ff7eb6,#fde047)"],
+["ホログラム(クラッシュ)",2000,"linear-gradient(135deg,#d1d5db,#f0abfc,#86efac)"],
+["ホログラム(クリスタル)",2000,"linear-gradient(135deg,#e5e7ff,#ffd6f5,#fff6c9)"],
+["ホログラム(スパークル)",2000,"linear-gradient(135deg,#ffffff,#ffe2f0,#d9e8ff)"],
+["ホログラム(リトルスター反射)",3000,"linear-gradient(135deg,#7dd3fc,#fde047,#ff7eb6)"]
+];
 function qtyOpts(max){var s="";for(var i=0;i<=max;i++)s+='<option value="'+i+'">'+i+'</option>';return s}
 var REINF=[["なし",0],["厚紙補強",300],["PPシート補強",500]];
 var FONTS=["Hachi Maru Pop","Mochiy Pop One","Dela Gothic One","RocknRoll One","Potta One","Yusei Magic"];
@@ -257,7 +272,7 @@ var COLHEX={"白":"#ffffff","黒":"#222222","ピンク":"#ff7eb6","赤":"#e5322d
 "ラズベリーピンク":"#e0218a","チェリーピンク":"#d6336c","ピーチ":"#ffb6a3","ベビーピンク":"#ffd1e6","オーロラ":"#eec9f0","レッド":"#e8342d","オレンジ":"#f2811d","レモンイエロー":"#f5e642","イエロー":"#ffd400","ライトグリーン":"#8ee08a","ライムグリーン":"#a4e63b","グリーン":"#2e8b57","アクアブルー":"#3fc6c6","アイスブルー":"#bfe8f0","サファイアブルー":"#4aa8e0","スカイブルー":"#6fc7ef","ライトブルー":"#7ec8f5","オーシャンブルー":"#1f7fc0","ブルー":"#1a4fd6","ラベンダーパープル":"#c9a6e0","パープル":"#8a3fd6","ブラウン":"#8a4a2a","ゴールド":"#d4af37","ライトグレー":"#b8b8b8","ブラック":"#1a1a1a","ホワイト":"#ffffff","蛍光風ピンク":"#ff3fa0","蛍光イエロー":"#eef23a","蛍光グリーン":"#7dff3a",
 "オペラ":"#e8447a","サニー":"#f08a3c","蛍光風スカイブルー":"#3fd0f0",
 "シルバー":"#c8c8d0","ビビッドオレンジ":"#f2551e","マゼンタピンク":"#e8399e","ロイヤルブルー":"#1830a0","メロンソーダ":"#8fe0a0","エメラルドグリーン":"#1fae82",
-"ダークレッド":"#8a1620","コーラル":"#f0917a","みかんオレンジ":"#f2821e","ココアブラウン":"#6b3b23","マリーゴールドイエロー":"#f0a830","ライトベージュ":"#e8dcc0","アイボリー":"#efe8da","ミントグリーン":"#2ea878","パステルミントグリーン":"#a8e0c0","ターコイズ":"#1f9a94","パステルブルー":"#b8dce8","ネイビー":"#1e2f7a","パステルパープル":"#c9b8e0","グレープパープル":"#9c2d78","クリームピンク":"#f5d9dd","パステルピンク":"#f4c2cf","グレー":"#8a8d8f","パステルグレー":"#d8d9da","ルージュピンク":"#c23a7a","ターコイズブルー":"#1fb8c4","ローズピンク":"#c2447a","パステルイエロー":"#f5ecb0","ペールパープル":"#d4c5ea","フレッシュグリーン":"#8fd44a","パステルグリーン":"#b8e8c8"};
+"ダークレッド":"#8a1620","コーラル":"#f0917a","みかんオレンジ":"#f2821e","ココアブラウン":"#6b3b23","マリーゴールドイエロー":"#f0a830","ライトベージュ":"#e8dcc0","アイボリー":"#efe8da","ミントグリーン":"#2ea878","パステルミントグリーン":"#a8e0c0","ターコイズ":"#1f9a94","パステルブルー":"#b8dce8","ネイビー":"#1e2f7a","パステルパープル":"#c9b8e0","グレープパープル":"#9c2d78","クリームピンク":"#f5d9dd","パステルピンク":"#f4c2cf","グレー":"#8a8d8f","パステルグレー":"#d8d9da","ルージュピンク":"#c23a7a","ターコイズブルー":"#1fb8c4","ローズピンク":"#c2447a","パステルイエロー":"#f5ecb0","ペールパープル":"#d4c5ea","フレッシュグリーン":"#8fd44a","パステルグリーン":"#b8e8c8","イエローグリーン":"#c7d91e","ローズレッド":"#d4568a","ピンクサファイア":"#e8407a","ピンクゴールド":"#e6aa95","オレンジゴールド":"#b0500e","イエローゴールド":"#c8a82a","クリスマスグリーン":"#1a8a2a","フォレストグリーン":"#22b010","パンジーパープル":"#5a0fa0","レインボー":"#e85a9a"};
 var DEFAULT_NAMES=["白","黒","ピンク","赤","青","水色","黄","紫"];
 function col2(name){return name?[name,COLHEX[name]||"#999"]:null}
 function renderEstimateSheet(L,subNoShip,ship,fee,total,qty){
@@ -338,12 +353,23 @@ $("mid").addEventListener("input",function(){$("midArea").style.display=$("mid")
 $("midC").addEventListener("change",calc);$("midB").addEventListener("change",calc);
 var REFLECT=["白","黒","レッド","ラズベリーピンク","チェリーピンク","ルージュピンク","ピンク","蛍光風ピンク","ベビーピンク","オーロラ","オレンジ","レモンイエロー","イエロー","蛍光イエロー","ライトグリーン","ライムグリーン","グリーン","蛍光グリーン","ターコイズブルー","アイスブルー","サファイアブルー","スカイブルー","ライトブルー","オーシャンブルー","ブルー","ラベンダーパープル","パープル","ブラウン","ゴールド","シルバー"];
 var FLUOR=["白","オペラ","ピンク","レッド","サニー","オレンジ","イエロー","グリーン","蛍光風スカイブルー","ブルー","パープル"];
-var HEART=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","エメラルドグリーン","フレッシュグリーン","パステルグリーン","ターコイズブルー","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ"];
+// ホログラム(ハート)：今回の24色データ
+var HEART2=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","エメラルドグリーン","フレッシュグリーン","パステルグリーン","ターコイズブルー","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ"];
+// ホログラム(リトルハート)：元の20色データ
+var HEART=["シルバー","ブラック","レッド","チェリーピンク","マゼンタピンク","ベビーピンク","ビビッドオレンジ","オレンジ","ゴールド","レモンイエロー","イエロー","グリーン","エメラルドグリーン","メロンソーダ","スカイブルー","オーシャンブルー","ブルー","ロイヤルブルー","パープル","ブラウン"];
+// ホログラム(リトルスター)：今回の24色データ
 var STAR=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","グリーン","エメラルドグリーン","フレッシュグリーン","パステルグリーン","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ"];
+// ホログラム(リトルスター反射)：元の4色データ
+var STARREFLECT=["蛍光風ピンク","蛍光イエロー","スカイブルー","ホワイト"];
+var HIBRIGHT=["レッド","オレンジ","イエローグリーン","ブルー","ホワイト"];
 var CRYSTAL=["シルバー","ブラック","レッド","マゼンタピンク","ラズベリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","グリーン","フレッシュグリーン","スカイブルー","ブルー","パープル","オーロラ"];
 var SPARKLE=["白","黒","レッド","マゼンタピンク","ローズピンク","ラズベリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","フレッシュグリーン","グリーン","スカイブルー","ブルー","パープル","ラベンダーパープル","オーロラ","シルバー"];
+// グリッター①：35色（レインボーは最後）
+var GLITTER1=["シルバー","ホワイト","ブラック","グレー","レッド","ローズレッド","マゼンタピンク","ローズピンク","ラズベリーピンク","チェリーピンク","ピンクサファイア","ベビーピンク","ピンクゴールド","オレンジ","オレンジゴールド","ゴールド","イエローゴールド","イエロー","レモンイエロー","パステルイエロー","クリスマスグリーン","フォレストグリーン","グリーン","フレッシュグリーン","パステルグリーン","ターコイズブルー","スカイブルー","サファイアブルー","ブルー","パープル","パンジーパープル","ラベンダーパープル","ペールパープル","オーロラ","レインボー"];
 var CUT=["白","黒","ダークレッド","レッド","コーラル","ビビッドオレンジ","みかんオレンジ","ココアブラウン","ゴールド","マリーゴールドイエロー","イエロー","ライトベージュ","アイボリー","ライムグリーン","グリーン","ミントグリーン","パステルミントグリーン","ターコイズ","スカイブルー","パステルブルー","ブルー","ネイビー","パープル","パステルパープル","グレープパープル","チェリーピンク","クリームピンク","パステルピンク","グレー","パステルグレー","シルバー"];
-var COLOR_MAP={0:CUT,1:REFLECT,2:FLUOR,6:HEART,7:STAR,8:CRYSTAL,9:SPARKLE};
+// 0カッティング 1蛍光 2蛍光反射 3反射 4高輝度反射 5グリッター① 6グリッター②
+// 7ハート 8リトルハート 9リトルスター 10クラッシュ 11クリスタル 12スパークル 13リトルスター反射
+var COLOR_MAP={0:CUT,1:FLUOR,3:REFLECT,4:HIBRIGHT,5:GLITTER1,7:HEART2,8:HEART,9:STAR,11:CRYSTAL,12:SPARKLE,13:STARREFLECT};
 function colorNamesFor(v){return v>=0?(COLOR_MAP[v]||DEFAULT_NAMES):[]}
 function colorOpts(names){return '<option value="">選択してください</option>'+names.map(function(n){return '<option value="'+n+'">'+n+'</option>'}).join('')}
 function updateColorSelect(i,keep){
@@ -536,7 +562,7 @@ function calc(){
   var tx=$("txt").value||"おなまえ",fi=+document.querySelector('input[name=fn]:checked').value;
   document.querySelectorAll(".ft span").forEach(function(e){e.textContent=tx});
   var c0=col(0),c1=+$("m1").value>=0?col(1):null,c2=+$("m2").value>=0?col(2):null,c3=+$("m3").value>=0?col(3):null;
-  var isRef=[0,1,2,3].map(function(i){return +$("m"+i).value===1});
+  var isRef=[0,1,2,3].map(function(i){var v=+$("m"+i).value;return v===3||v===4});
   var hasReflect=isRef.some(Boolean);
   $("reflectToggleWrap").style.display=hasReflect?"flex":"none";
   if(!hasReflect)REFLECT_ON=false;
@@ -627,7 +653,6 @@ $("introOk").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false
 $("introTrack").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false;tab(3);window.scrollTo(0,0)};
 calc();
 </script>
-<script src="texture.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
