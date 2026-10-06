@@ -165,12 +165,12 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 <label class="row"><span><input type="checkbox" id="honor">敬称をつける</span><span class="p">+100円</span></label>
 <div id="honorArea" style="display:none;margin:6px 0">
 <input type="text" id="honorTxt" maxlength="4" placeholder="例：様、くん、ちゃん">
-<div class="g2"><div><span class="lbl">文字色</span><select id="honorC"></select></div><div><span class="lbl">フチ色</span><select id="honorB"></select></div></div>
+<div class="g2"><div><span class="lbl">素材</span><select id="honorM"></select></div><div><span class="lbl">カラー</span><select id="honorC"></select></div></div><small>フチは一律ブラックになります</small>
 </div>
 <span class="lbl" style="margin-top:10px">中文字（1文字ごと +500円）</span>
 <input type="text" id="mid" maxlength="10" placeholder="例：へ">
 <div id="midArea" style="display:none;margin:6px 0">
-<div class="g2"><div><span class="lbl">文字色</span><select id="midC"></select></div><div><span class="lbl">フチ色</span><select id="midB"></select></div></div>
+<div class="g2"><div><span class="lbl">素材</span><select id="midM"></select></div><div><span class="lbl">カラー</span><select id="midC"></select></div></div><small>フチは一律ブラックになります</small>
 </div>
 <span class="lbl">裏面補強<small id="reinfReq" style="color:var(--ac)"></small></span><select id="reinf"></select>
 <label class="row"><span><input type="checkbox" id="rush">お急ぎ（7日以内に発送）</span><span class="p">+1,000円</span></label>
@@ -250,7 +250,7 @@ summary{cursor:pointer;font-size:.85rem;opacity:.85}
 var $=function(id){return document.getElementById(id)},yen=function(n){return "¥"+n.toLocaleString("ja-JP")};
 var SIZES=[["S","うちわにぎりぎり収まる",900],["M","少しだけはみ出す",1200],["L","しっかりはみ出す（30×30cmまで）",1500]];
 var MATS=[
-["カッティングシート",600,"linear-gradient(135deg,#7dd3fc,#ff7eb6)"],
+["カッティングシート",800,"linear-gradient(135deg,#7dd3fc,#ff7eb6)"],
 ["蛍光シート",1000,"linear-gradient(135deg,#a3e635,#f472b6)"],
 ["蛍光反射シート",1800,"linear-gradient(135deg,#fb923c,#fde047)"],
 ["反射シート",1500,"linear-gradient(135deg,#d1d5db,#f9fafb)"],
@@ -272,8 +272,15 @@ var COLHEX={"白":"#ffffff","黒":"#222222","ピンク":"#ff7eb6","赤":"#e5322d
 "ラズベリーピンク":"#e0218a","チェリーピンク":"#d6336c","ピーチ":"#ffb6a3","ベビーピンク":"#ffd1e6","オーロラ":"#eec9f0","レッド":"#e8342d","オレンジ":"#f2811d","レモンイエロー":"#f5e642","イエロー":"#ffd400","ライトグリーン":"#8ee08a","ライムグリーン":"#a4e63b","グリーン":"#2e8b57","アクアブルー":"#3fc6c6","アイスブルー":"#bfe8f0","サファイアブルー":"#4aa8e0","スカイブルー":"#6fc7ef","ライトブルー":"#7ec8f5","オーシャンブルー":"#1f7fc0","ブルー":"#1a4fd6","ラベンダーパープル":"#c9a6e0","パープル":"#8a3fd6","ブラウン":"#8a4a2a","ゴールド":"#d4af37","ライトグレー":"#b8b8b8","ブラック":"#1a1a1a","ホワイト":"#ffffff","蛍光風ピンク":"#ff3fa0","蛍光イエロー":"#eef23a","蛍光グリーン":"#7dff3a",
 "オペラ":"#e8447a","サニー":"#f08a3c","蛍光風スカイブルー":"#3fd0f0",
 "シルバー":"#c8c8d0","ビビッドオレンジ":"#f2551e","マゼンタピンク":"#e8399e","ロイヤルブルー":"#1830a0","メロンソーダ":"#8fe0a0","エメラルドグリーン":"#1fae82",
-"ダークレッド":"#8a1620","コーラル":"#f0917a","みかんオレンジ":"#f2821e","ココアブラウン":"#6b3b23","マリーゴールドイエロー":"#f0a830","ライトベージュ":"#e8dcc0","アイボリー":"#efe8da","ミントグリーン":"#2ea878","パステルミントグリーン":"#a8e0c0","ターコイズ":"#1f9a94","パステルブルー":"#b8dce8","ネイビー":"#1e2f7a","パステルパープル":"#c9b8e0","グレープパープル":"#9c2d78","クリームピンク":"#f5d9dd","パステルピンク":"#f4c2cf","グレー":"#8a8d8f","パステルグレー":"#d8d9da","ルージュピンク":"#c23a7a","ターコイズブルー":"#1fb8c4","ローズピンク":"#c2447a","パステルイエロー":"#f5ecb0","ペールパープル":"#d4c5ea","フレッシュグリーン":"#8fd44a","パステルグリーン":"#b8e8c8","イエローグリーン":"#c7d91e","ローズレッド":"#d4568a","ピンクサファイア":"#e8407a","ピンクゴールド":"#e6aa95","オレンジゴールド":"#b0500e","イエローゴールド":"#c8a82a","クリスマスグリーン":"#1a8a2a","フォレストグリーン":"#22b010","パンジーパープル":"#5a0fa0","レインボー":"#e85a9a"};
-var DEFAULT_NAMES=["白","黒","ピンク","赤","青","水色","黄","紫"];
+"ダークレッド":"#8a1620","コーラル":"#f0917a","みかんオレンジ":"#f2821e","ココアブラウン":"#6b3b23","マリーゴールドイエロー":"#f0a830","ライトベージュ":"#e8dcc0","アイボリー":"#efe8da","ミントグリーン":"#2ea878","パステルミントグリーン":"#a8e0c0","ターコイズ":"#1f9a94","パステルブルー":"#b8dce8","ネイビー":"#1e2f7a","パステルパープル":"#c9b8e0","グレープパープル":"#9c2d78","クリームピンク":"#f5d9dd","パステルピンク":"#f4c2cf","グレー":"#8a8d8f","パステルグレー":"#d8d9da","ルージュピンク":"#c23a7a","ターコイズブルー":"#1fb8c4","ローズピンク":"#c2447a","パステルイエロー":"#f5ecb0","ペールパープル":"#d4c5ea","フレッシュグリーン":"#8fd44a","パステルグリーン":"#b8e8c8","イエローグリーン":"#c7d91e","ローズレッド":"#d4568a","ピンクサファイア":"#e8407a","ピンクゴールド":"#e6aa95","オレンジゴールド":"#b0500e","イエローゴールド":"#c8a82a","クリスマスグリーン":"#1a8a2a","フォレストグリーン":"#22b010","パンジーパープル":"#5a0fa0","レインボー":"#e85a9a","ミルク":"#d4d6da","ストロベリー":"#b01e2a","パウダーピンク":"#c890b8","パインイエロー":"#b8c25a","ラムネ":"#7cc8c8","ブルーベリー":"#3a48a0","ライラック":"#9a7aa0"};
+// 素材ごとに色味が違う同名カラーの上書き（6＝グリッター②、10＝クラッシュ）
+var MAT_HEX={10:{"チェリーピンク":"#a3156e","ベビーピンク":"#d99ec0","ゴールド":"#a89a4a","グリーン":"#18806a","ラベンダーパープル":"#4b3d8f"},6:{"ピーチ":"#c95a7a","ミントグリーン":"#5ab88e","アイスブルー":"#8aa8c4","サファイアブルー":"#3a8ce0","オーロラ":"#c8a0c8"}};
+// 反射ON時に色味が変わる素材（2＝蛍光反射）
+var REFLECT_HEX={2:{"蛍光風ピンク":"#e64ad8","蛍光イエロー":"#d9b632","蛍光グリーン":"#d8f23a"}};
+function hexForM(m,name){var r=REFLECT_ON&&REFLECT_HEX[m],o=MAT_HEX[m];return (r&&r[name])||(o&&o[name])||COLHEX[name]||"#999"}
+function hexFor(i,name){return hexForM(+$("m"+i).value,name)}
+var EDGE_BLACK="#1a1a1a";
+var DEFAULT_NAMES=["ホワイト","ブラック","ピンク","赤","青","水色","黄","紫"];
 function col2(name){return name?[name,COLHEX[name]||"#999"]:null}
 function renderEstimateSheet(L,subNoShip,ship,fee,total,qty){
   var d=new Date();
@@ -346,30 +353,35 @@ function makeDraggable(el){
   });
 }
 makeDraggable($("pvMid"));makeDraggable($("pvHonor"));
-["honorC","honorB","midC","midB"].forEach(function(id){$(id).innerHTML=colorOpts(DEFAULT_NAMES)});
 $("honor").addEventListener("change",function(){$("honorArea").style.display=$("honor").checked?"block":"none";calc()});
-$("honorTxt").addEventListener("input",calc);$("honorC").addEventListener("change",calc);$("honorB").addEventListener("change",calc);
+$("honorTxt").addEventListener("input",calc);$("honorC").addEventListener("change",calc);
 $("mid").addEventListener("input",function(){$("midArea").style.display=$("mid").value.trim()?"block":"none";calc()});
-$("midC").addEventListener("change",calc);$("midB").addEventListener("change",calc);
-var REFLECT=["白","黒","レッド","ラズベリーピンク","チェリーピンク","ルージュピンク","ピンク","蛍光風ピンク","ベビーピンク","オーロラ","オレンジ","レモンイエロー","イエロー","蛍光イエロー","ライトグリーン","ライムグリーン","グリーン","蛍光グリーン","ターコイズブルー","アイスブルー","サファイアブルー","スカイブルー","ライトブルー","オーシャンブルー","ブルー","ラベンダーパープル","パープル","ブラウン","ゴールド","シルバー"];
-var FLUOR=["白","オペラ","ピンク","レッド","サニー","オレンジ","イエロー","グリーン","蛍光風スカイブルー","ブルー","パープル"];
+$("midC").addEventListener("change",calc);
+var REFLECT=["ホワイト","ブラック","レッド","ラズベリーピンク","チェリーピンク","ルージュピンク","ピンク","蛍光風ピンク","ベビーピンク","オーロラ","オレンジ","レモンイエロー","イエロー","蛍光イエロー","ライトグリーン","ライムグリーン","グリーン","蛍光グリーン","ターコイズブルー","アイスブルー","サファイアブルー","スカイブルー","ライトブルー","オーシャンブルー","ブルー","ラベンダーパープル","パープル","ブラウン","ゴールド","シルバー"];
+var FLUOR=["ホワイト","オペラ","ピンク","レッド","サニー","オレンジ","イエロー","グリーン","蛍光風スカイブルー","ブルー","パープル"];
 // ホログラム(ハート)：今回の24色データ
-var HEART2=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","エメラルドグリーン","フレッシュグリーン","パステルグリーン","ターコイズブルー","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ"];
+var HEART2=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","エメラルドグリーン","フレッシュグリーン","パステルグリーン","ターコイズブルー","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ","ホワイト","レインボー"];
 // ホログラム(リトルハート)：元の20色データ
 var HEART=["シルバー","ブラック","レッド","チェリーピンク","マゼンタピンク","ベビーピンク","ビビッドオレンジ","オレンジ","ゴールド","レモンイエロー","イエロー","グリーン","エメラルドグリーン","メロンソーダ","スカイブルー","オーシャンブルー","ブルー","ロイヤルブルー","パープル","ブラウン"];
 // ホログラム(リトルスター)：今回の24色データ
-var STAR=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","グリーン","エメラルドグリーン","フレッシュグリーン","パステルグリーン","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ"];
+var STAR=["シルバー","ブラック","レッド","マゼンタピンク","ローズピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","レモンイエロー","パステルイエロー","グリーン","エメラルドグリーン","フレッシュグリーン","パステルグリーン","スカイブルー","パステルブルー","サファイアブルー","ブルー","パープル","ラベンダーパープル","ペールパープル","オーロラ","ホワイト","レインボー"];
 // ホログラム(リトルスター反射)：元の4色データ
 var STARREFLECT=["蛍光風ピンク","蛍光イエロー","スカイブルー","ホワイト"];
 var HIBRIGHT=["レッド","オレンジ","イエローグリーン","ブルー","ホワイト"];
 var CRYSTAL=["シルバー","ブラック","レッド","マゼンタピンク","ラズベリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","グリーン","フレッシュグリーン","スカイブルー","ブルー","パープル","オーロラ"];
-var SPARKLE=["白","黒","レッド","マゼンタピンク","ローズピンク","ラズベリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","フレッシュグリーン","グリーン","スカイブルー","ブルー","パープル","ラベンダーパープル","オーロラ","シルバー"];
+var SPARKLE=["ホワイト","ブラック","レッド","マゼンタピンク","ローズピンク","ラズベリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","フレッシュグリーン","グリーン","スカイブルー","ブルー","パープル","ラベンダーパープル","オーロラ","シルバー"];
 // グリッター①：35色（レインボーは最後）
 var GLITTER1=["シルバー","ホワイト","ブラック","グレー","レッド","ローズレッド","マゼンタピンク","ローズピンク","ラズベリーピンク","チェリーピンク","ピンクサファイア","ベビーピンク","ピンクゴールド","オレンジ","オレンジゴールド","ゴールド","イエローゴールド","イエロー","レモンイエロー","パステルイエロー","クリスマスグリーン","フォレストグリーン","グリーン","フレッシュグリーン","パステルグリーン","ターコイズブルー","スカイブルー","サファイアブルー","ブルー","パープル","パンジーパープル","ラベンダーパープル","ペールパープル","オーロラ","レインボー"];
-var CUT=["白","黒","ダークレッド","レッド","コーラル","ビビッドオレンジ","みかんオレンジ","ココアブラウン","ゴールド","マリーゴールドイエロー","イエロー","ライトベージュ","アイボリー","ライムグリーン","グリーン","ミントグリーン","パステルミントグリーン","ターコイズ","スカイブルー","パステルブルー","ブルー","ネイビー","パープル","パステルパープル","グレープパープル","チェリーピンク","クリームピンク","パステルピンク","グレー","パステルグレー","シルバー"];
+// グリッター②：12色
+var GLITTER2=["ミルク","ストロベリー","ピーチ","パウダーピンク","パインイエロー","ミントグリーン","ラムネ","アイスブルー","サファイアブルー","ブルーベリー","ライラック","オーロラ"];
+// ホログラム(クラッシュ)：16色（レインボーは最後）
+var CRUSH=["シルバー","ブラック","レッド","マゼンタピンク","チェリーピンク","ベビーピンク","オレンジ","ゴールド","イエロー","フォレストグリーン","グリーン","フレッシュグリーン","スカイブルー","ブルー","ラベンダーパープル","レインボー"];
+// 蛍光反射シート：3色
+var FLUORREF=["蛍光風ピンク","蛍光イエロー","蛍光グリーン"];
+var CUT=["ホワイト","ブラック","ダークレッド","レッド","コーラル","ビビッドオレンジ","みかんオレンジ","ココアブラウン","ゴールド","マリーゴールドイエロー","イエロー","ライトベージュ","アイボリー","ライムグリーン","グリーン","ミントグリーン","パステルミントグリーン","ターコイズ","スカイブルー","パステルブルー","ブルー","ネイビー","パープル","パステルパープル","グレープパープル","チェリーピンク","クリームピンク","パステルピンク","グレー","パステルグレー","シルバー"];
 // 0カッティング 1蛍光 2蛍光反射 3反射 4高輝度反射 5グリッター① 6グリッター②
 // 7ハート 8リトルハート 9リトルスター 10クラッシュ 11クリスタル 12スパークル 13リトルスター反射
-var COLOR_MAP={0:CUT,1:FLUOR,3:REFLECT,4:HIBRIGHT,5:GLITTER1,7:HEART2,8:HEART,9:STAR,11:CRYSTAL,12:SPARKLE,13:STARREFLECT};
+var COLOR_MAP={0:CUT,1:FLUOR,2:FLUORREF,3:REFLECT,4:HIBRIGHT,5:GLITTER1,6:GLITTER2,7:HEART2,8:HEART,9:STAR,10:CRUSH,11:CRYSTAL,12:SPARKLE,13:STARREFLECT};
 function colorNamesFor(v){return v>=0?(COLOR_MAP[v]||DEFAULT_NAMES):[]}
 function colorOpts(names){return '<option value="">選択してください</option>'+names.map(function(n){return '<option value="'+n+'">'+n+'</option>'}).join('')}
 function updateColorSelect(i,keep){
@@ -377,16 +389,24 @@ function updateColorSelect(i,keep){
   $("c"+i).innerHTML=colorOpts(names);
   $("c"+i).value=(keep&&names.indexOf(cur)>=0)?cur:"";
 }
-var SL=[["文字","ピンク"],["フチ①",""],["フチ②",""],["フチ③",""]];
+var SL=[["文字","パステルピンク"],["フチ①",""],["フチ②",""],["フチ③",""]];
+function matPrice(v,name){return v===0?((name==="ホワイト"||name==="ブラック")?500:800):MATS[v][1]}
+function matOpts(none){return (none?'<option value="-1">'+none+'</option>':'')+MATS.map(function(x,i){return '<option value="'+i+'">'+x[0]+'（'+(i===0?"¥500〜¥800":yen(x[1]))+'）</option>'}).join('')}
 function opts(l,none){return (none?'<option value="-1">'+none+'</option>':'')+l.map(function(x,i){return '<option value="'+i+'">'+x[0]+'（'+yen(x[1])+'）</option>'}).join('')}
 $("fonts").innerHTML=FONTS.map(function(f,i){return '<label class="card ft"><input type="radio" name="fn" value="'+i+'"'+(i==0?' checked':'')+'><span style="font-family:\''+f+'\'"></span><small>'+(i+1)+'番</small></label>'}).join('');
 $("size").innerHTML=SIZES.map(function(s,i){return '<label class="card"><input type="radio" name="sz" value="'+i+'"'+(i==1?' checked':'')+'><div class="ph" style="background:linear-gradient(135deg,#a7e8ea,#8ec9f0)">見本画像</div><b>'+s[0]+'</b><br><small>'+s[1]+'</small><br>'+yen(s[2])+'</label>'}).join('');
 $("gal").innerHTML=MATS.map(function(m){return '<div style="text-align:center"><div class="ph" style="background:'+m[2]+'">見本画像</div><small>'+m[0].split("（")[0]+'</small></div>'}).join('');
-$("slots").innerHTML=SL.map(function(s,i){return '<div class="slotgrp"><span class="lbl">'+s[0]+'：素材</span><select id="m'+i+'">'+opts(MATS,i?"なし":"")+'</select><span class="lbl">'+s[0]+'：カラー</span><select id="c'+i+'">'+colorOpts(i?[]:DEFAULT_NAMES)+'</select></div>'}).join('');
+$("slots").innerHTML=SL.map(function(s,i){return '<div class="slotgrp"><span class="lbl">'+s[0]+'：素材</span><select id="m'+i+'">'+matOpts(i?"なし":"")+'</select><span class="lbl">'+s[0]+'：カラー</span><select id="c'+i+'">'+colorOpts(i?[]:colorNamesFor(0))+'</select></div>'}).join('');
 SL.forEach(function(s,i){if(s[1])$("c"+i).value=s[1]});
 $("m1").value="-1";$("m2").value="-1";$("m3").value="-1";
 [0,1,2,3].forEach(function(i){$("m"+i).addEventListener("change",function(){updateColorSelect(i);calc()})});
 $("reinf").innerHTML=opts(REINF);
+// 敬称・中文字：素材とカラーを選ぶ（フチは一律ブラック）
+["honor","mid"].forEach(function(k){
+  $(k+"M").innerHTML=matOpts();
+  $(k+"C").innerHTML=colorOpts(colorNamesFor(0));
+  $(k+"M").addEventListener("change",function(){$(k+"C").innerHTML=colorOpts(colorNamesFor(+$(k+"M").value));calc()});
+});
 $("decoH").innerHTML=qtyOpts(20);$("decoO").innerHTML=qtyOpts(20);$("decoB").innerHTML=qtyOpts(20);
 var SHIP=[["通常配送",500],["宅急便",1000],["匿名配送",500]];
 var PAYWAY=[["銀行振込",0],["PayPay",0],["メルペイ",0],["楽天ペイ",0]];
@@ -516,9 +536,9 @@ function calc(){
   var szi=+document.querySelector('input[name=sz]:checked').value,sz=SIZES[szi];
   add("サイズ "+sz[0],sz[2],true);
   $("reinfReq").textContent=szi>=1?"（⚠️M・Lサイズは必須です）":"";
-  var col=function(i){var v=$("c"+i).value;return v?[v,COLHEX[v]||"#999"]:null};
+  var col=function(i){var v=$("c"+i).value;return v?[v,hexFor(i,v)]:null};
   var parts=[];
-  SL.forEach(function(s,i){var v=+$("m"+i).value;if(v>=0){var c=col(i);add(s[0]+"："+MATS[v][0].split("（")[0],MATS[v][1],true);parts.push(s[0]+"＝"+MATS[v][0].split("（")[0]+"・"+(c?c[0]:"カラー未選択"))}});
+  SL.forEach(function(s,i){var v=+$("m"+i).value;if(v>=0){var c=col(i);add(s[0]+"："+MATS[v][0].split("（")[0],matPrice(v,c?c[0]:""),true);parts.push(s[0]+"＝"+MATS[v][0].split("（")[0]+"・"+(c?c[0]:"カラー未選択"))}});
   var hq=+$("decoH").value,oq=+$("decoO").value,bq=+$("decoB").value;
   if(hq)add("ハート・星 "+hq+"個",hq*50);if(oq)add("その他の装飾 "+oq+"個",oq*300);if(bq)add("持ち込みデザイン "+bq+"個",bq*500);
   var dnoteParts=[];
@@ -530,10 +550,12 @@ function calc(){
   if($("honor").checked)add("敬称",100);
   var midN=moraCount($("mid").value.trim());if(midN)add("中文字 "+midN+"文字",midN*500);
   var fnNow=FONTS[+document.querySelector('input[name=fn]:checked').value];
-  var hc=col2($("honorC").value),hb=col2($("honorB").value);
-  styMini($("pvHonor"),$("honor").checked?$("honorTxt").value:"",fnNow,hc?hc[1]:"#999",hb?hb[1]:0,[2.5,3.5],"0.015em");
-  var mc=col2($("midC").value),mb=col2($("midB").value);
-  styMini($("pvMid"),$("mid").value.trim(),fnNow,mc?mc[1]:"#999",mb?mb[1]:0,[3,4.5],"0.03em");
+  var hm=+$("honorM").value,hcn=$("honorC").value,mm=+$("midM").value,mcn=$("midC").value;
+  styMini($("pvHonor"),$("honor").checked?$("honorTxt").value:"",fnNow,hcn?hexForM(hm,hcn):"#999",EDGE_BLACK,[2.5,3.5],"0.015em");
+  styMini($("pvMid"),$("mid").value.trim(),fnNow,mcn?hexForM(mm,mcn):"#999",EDGE_BLACK,[3,4.5],"0.03em");
+  var extra=[];
+  if($("honor").checked&&$("honorTxt").value.trim())extra.push("敬称「"+$("honorTxt").value.trim()+"」＝"+MATS[hm][0]+"・"+(hcn||"カラー未選択")+"（フチ：ブラック）");
+  if($("mid").value.trim())extra.push("中文字「"+$("mid").value.trim()+"」＝"+MATS[mm][0]+"・"+(mcn||"カラー未選択")+"（フチ：ブラック）");
   var r=REINF[+$("reinf").value];if(r[1])add(r[0],r[1],true);
   var sub=per*qty;
   var h=L.map(function(x){
@@ -562,14 +584,14 @@ function calc(){
   var tx=$("txt").value||"おなまえ",fi=+document.querySelector('input[name=fn]:checked').value;
   document.querySelectorAll(".ft span").forEach(function(e){e.textContent=tx});
   var c0=col(0),c1=+$("m1").value>=0?col(1):null,c2=+$("m2").value>=0?col(2):null,c3=+$("m3").value>=0?col(3):null;
-  var isRef=[0,1,2,3].map(function(i){var v=+$("m"+i).value;return v===3||v===4});
+  var isRef=[0,1,2,3].map(function(i){var v=+$("m"+i).value;return v===2||v===3||v===4});
   var hasReflect=isRef.some(Boolean);
   $("reflectToggleWrap").style.display=hasReflect?"flex":"none";
   if(!hasReflect)REFLECT_ON=false;
   styLayers(tx,FONTS[fi],c0?c0[1]:"#999",c1?c1[1]:0,c2?c2[1]:0,c3?c3[1]:0,1,{
     fill:REFLECT_ON&&isRef[0],c1:REFLECT_ON&&isRef[1],c2:REFLECT_ON&&isRef[2],c3:REFLECT_ON&&isRef[3]
   });
-  SUM="文字："+tx+"／フォント："+FONTS[fi]+"／サイズ"+sz[0]+"／"+parts.join("、")+dnote;
+  SUM="文字："+tx+"／フォント："+FONTS[fi]+"／サイズ"+sz[0]+"／"+parts.join("、")+(extra.length?"／"+extra.join("、"):"")+dnote;
   $("pvs").textContent="サイズ"+sz[0]+"｜"+parts.join("｜");
   return {total:sub+fee,qty:qty}
 }
@@ -603,6 +625,8 @@ $("reflectOffBtn").onclick=function(){REFLECT_ON=false;$("reflectOffBtn").classN
 var API_URL="https://script.google.com/macros/s/AKfycbyaIpRC5ZUOv_uS4xlk_YqUCeeHuc26_oZ7DenLjwy7hYczbALxqnn_7zIy27AqSe5cGA/exec";
 function send(kind){var r=calc(),n=$("name").value.trim();
   for(var i=0;i<SL.length;i++){if(+$("m"+i).value>=0&&!$("c"+i).value){$("res").textContent=SL[i][0]+"のカラーを選択してください。";$("c"+i).focus();return}}
+  if($("honor").checked&&!$("honorC").value){$("res").textContent="敬称のカラーを選択してください。";$("honorC").focus();return}
+  if($("mid").value.trim()&&!$("midC").value){$("res").textContent="中文字のカラーを選択してください。";$("midC").focus();return}
   if(+document.querySelector('input[name=sz]:checked').value>=1&&+$("reinf").value==0){$("res").textContent="M・Lサイズは裏面補強の選択が必須です。";$("reinf").focus();return}
   if(!$("dateUnknown").checked&&$("usedate").value){var dchk=Math.ceil((new Date($("usedate").value)-new Date())/86400000);if(dchk<14){$("res").textContent="使用日は2週間より先の日付をお選びください。";$("usedate").focus();return}}
   if(!n){$("res").textContent="お名前を入力してください。";$("name").focus();return}
@@ -653,6 +677,7 @@ $("introOk").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false
 $("introTrack").onclick=function(){$("intro").hidden=true;$("tabsNav").hidden=false;tab(3);window.scrollTo(0,0)};
 calc();
 </script>
+<script src="texture.js?v=12"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
