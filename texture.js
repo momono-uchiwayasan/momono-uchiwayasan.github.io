@@ -13,7 +13,9 @@ var SETMAP={"グリッター①":"グリッター①","グリッター②":"グ�
 var SETMAP_ON={"ホログラム(リトルスター反射)":"リトルスター反射ON","高輝度反射シート":"高輝度反射ON"};
 // 色名の言い換え（order.html側の名前 → 写真側の名前）
 var ALIAS={"白":"ホワイト","黒":"ブラック","イエローグリーン":"蛍光イエロー"};
-var TEX_SCALE=0.9;            // 質感の模様の大きさ（大きくすると模様が粗くなる）
+var TEX_SCALE=0.9;
+// フチの太さ（order.html の styLayers / styMini と同じ値。k倍される）
+var RING={c1:3,c2:6,c3:10.5},MINI_K=0.75;            // 質感の模様の大きさ（大きくすると模様が粗くなる）
 var R_ON=false;
 function matName(slot){var v=+$("m"+slot).value;return v>=0&&MATS[v]?MATS[v][0]:""}
 
@@ -28,11 +30,11 @@ function tileCanvas(k){
   });
   return tileCache[k]=c;
 }
-function texFor(slot){
-  var m=matName(slot),set=IDX[(R_ON&&SETMAP_ON[m])||SETMAP[m]];if(!set||!ready)return null;
-  var n=$("c"+slot).value;n=ALIAS[n]||n;
-  return set[n]!==undefined?set[n]:null;
+function texForMC(m,n){
+  var set=IDX[(R_ON&&SETMAP_ON[m])||SETMAP[m]];if(!set||!ready)return null;
+  n=ALIAS[n]||n;return set[n]!==undefined?set[n]:null;
 }
+function texFor(slot){return texForMC(matName(slot),$("c"+slot).value)}
 
 // プレビュー用キャンバスを用意（元の文字spanは隠す）
 var pvt=$("pvt"),cv=document.createElement("canvas");
@@ -44,9 +46,9 @@ var LAYERS=[],W=0,H=0,DPR=1,last=null,t0=performance.now();
 var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function build(a){
-  var txt=a[0],font=a[1],fill=a[2],c1=a[3],c2=a[4],c3=a[5],refl=a[7];
+  var txt=a[0],font=a[1],fill=a[2],c1=a[3],c2=a[4],c3=a[5],k=a[6]||1,refl=a[7];
   var fs=parseFloat(getComputedStyle(pvt).fontSize)||35;
-  var maxR=c3?8.5:(c2?6:(c1?3:0)),ls=Math.ceil(2*maxR+3),pad=maxR+3;
+  var maxR=(c3?RING.c3:(c2?RING.c2:(c1?RING.c1:0)))*k,ls=Math.ceil(2*maxR+3),pad=maxR+3;
   DPR=Math.min(window.devicePixelRatio||1,3);W=Math.max(120,pvt.clientWidth);
   var fstr="400 "+fs+"px '"+font+"',sans-serif";
   var mc=document.createElement("canvas").getContext("2d");mc.font=fstr;
@@ -60,7 +62,7 @@ function build(a){
   var lh=fs*1.3;H=Math.ceil(lines.length*lh+pad*2);
   cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);cv.style.height=H+"px";
   function rs(i){return R_ON&&!!SETMAP_ON[matName(i)]}
-  var specs=[[c3,8.5,3,refl.c3||rs(3)],[c2,6,2,refl.c2||rs(2)],[c1,3,1,refl.c1||rs(1)],[fill,0,0,refl.fill||rs(0)]];
+  var specs=[[c3,RING.c3*k,3,refl.c3||rs(3)],[c2,RING.c2*k,2,refl.c2||rs(2)],[c1,RING.c1*k,1,refl.c1||rs(1)],[fill,0,0,refl.fill||rs(0)]];
   LAYERS=specs.filter(function(s){return s[0]}).map(function(s){
     var c=document.createElement("canvas");c.width=cv.width;c.height=cv.height;
     var g=c.getContext("2d");g.scale(DPR,DPR);g.font=fstr;g.textBaseline="middle";
@@ -109,7 +111,7 @@ function render(){
 
 // 元の描画関数を置き換え（calc() から呼ばれる）
 function syncToggle(){
-  var has=[0,1,2,3].some(function(i){return !!SETMAP_ON[matName(i)]});
+  var has=[0,1,2,3].some(function(i){return !!SETMAP_ON[matName(i)]})||miniMats().some(function(m){return !!SETMAP_ON[m]});
   if(has)$("reflectToggleWrap").style.display="flex";
   else if($("reflectToggleWrap").style.display==="none"&&R_ON){R_ON=false;$("reflectOffBtn").className="pri";$("reflectOnBtn").className="sec"}
 }
@@ -121,6 +123,49 @@ window.styLayers=function(){
     document.fonts.load("400 40px '"+key+"'",a[0]).then(function(){if(last===a)render()});
   }
 };
+// ===== 敬称・中文字：選んだ素材の質感をそのまま反映 =====
+var REFL_NAMES={"反射シート":1,"蛍光反射シート":1,"高輝度反射シート":1,"ホログラム(リトルスター反射)":1};
+var MINI={pvHonor:["honorM","honorC"],pvMid:["midM","midC"]};
+function miniName(id){var v=+$(MINI[id][0]).value;return v>=0&&MATS[v]?MATS[v][0]:""}
+function miniMats(){var r=[];if($("honor").checked&&$("honorTxt").value.trim())r.push(miniName("pvHonor"));if($("mid").value.trim())r.push(miniName("pvMid"));return r}
+var miniLast={};
+function drawMini(el,text,font,fill,border,radii,spacing){
+  var cvm=el.querySelector("canvas.texmini");
+  if(!text){el.textContent="";return}
+  if(!cvm||el.textContent!==""){el.textContent="";cvm=document.createElement("canvas");cvm.className="texmini";cvm.style.cssText="display:block;pointer-events:none";el.appendChild(cvm)}
+  el.style.textShadow="none";el.style.color="transparent";
+  var fs=parseFloat(getComputedStyle(el).fontSize)||16,ls=(parseFloat(spacing)||0)*fs;
+  var r=border?Math.max.apply(null,radii)*MINI_K:0,pad=r+2,dpr=Math.min(window.devicePixelRatio||1,3);
+  var fstr="400 "+fs+"px '"+font+"',sans-serif",g0=document.createElement("canvas").getContext("2d");g0.font=fstr;
+  var chars=Array.from(text).map(function(ch){return [ch,g0.measureText(ch).width]});
+  var tw=chars.reduce(function(a,c){return a+c[1]},0)+ls*(chars.length-1),lh=fs*1.3;
+  var W=Math.ceil(tw+pad*2),H=Math.ceil(lh+pad*2);
+  cvm.width=Math.round(W*dpr);cvm.height=Math.round(H*dpr);cvm.style.width=W+"px";cvm.style.height=H+"px";
+  function layer(width,paint,glow){
+    var c=document.createElement("canvas");c.width=cvm.width;c.height=cvm.height;var g=c.getContext("2d");
+    g.scale(dpr,dpr);g.font=fstr;g.textBaseline="middle";g.lineJoin="round";g.lineWidth=width*2;g.fillStyle=g.strokeStyle="#000";
+    var x=pad,y=pad+lh/2;chars.forEach(function(p){if(width)g.strokeText(p[0],x,y);g.fillText(p[0],x,y);x+=p[1]+ls});
+    g.globalCompositeOperation="source-in";g.setTransform(1,0,0,1,0,0);g.fillStyle=paint;g.fillRect(0,0,c.width,c.height);
+    if(glow){g.globalCompositeOperation="source-atop";g.fillStyle="rgba(255,255,255,.28)";g.fillRect(0,0,c.width,c.height)}
+    return c;
+  }
+  var ids=MINI[el.id],m=ids?miniName(el.id):"",cn=ids?$(ids[1]).value:"",k=ids?texForMC(m,cn):null,paint=fill;
+  if(k!==null){
+    var tmpc=document.createElement("canvas").getContext("2d");paint=tmpc.createPattern(tileCanvas(k),"repeat");
+    var fsMain=parseFloat(getComputedStyle(pvt).fontSize)||35,rb=cn==="レインボー",sc=(rb?lh/TH:fsMain/80*TEX_SCALE)*dpr;
+    if(paint.setTransform&&window.DOMMatrix)paint.setTransform(new DOMMatrix([sc,0,0,sc,0,rb?pad*dpr:0]));
+  }
+  var glow=R_ON&&!!REFL_NAMES[m];
+  var g=cvm.getContext("2d");g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cvm.width,cvm.height);
+  if(r)g.drawImage(layer(r,border,false),0,0);
+  if(glow){g.shadowColor="rgba(255,255,255,.85)";g.shadowBlur=6*dpr}
+  g.drawImage(layer(0,paint,glow),0,0);g.shadowBlur=0;
+  if(document.fonts&&document.fonts.load&&!miniLast[el.id+font]){miniLast[el.id+font]=1;document.fonts.load("400 20px '"+font+"'",text).then(function(){calc()})}
+}
+window.styMini=drawMini;
+$("honorM")&&$("honorM").addEventListener("change",function(){calc()});
+$("midM")&&$("midM").addEventListener("change",function(){calc()});
+
 atlas.onload=function(){
   ready=true;calc();
   // 素材見本の枠にも実物の質感を表示
