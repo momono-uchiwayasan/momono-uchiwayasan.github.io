@@ -17,6 +17,7 @@ var TEX_SCALE=0.9;
 // フチの太さ（order.html の styLayers / styMini と同じ値。k倍される）
 var RING={c1:3,c2:6,c3:10.5},MINI_K=0.75;            // 質感の模様の大きさ（大きくすると模様が粗くなる）
 var R_ON=false;
+var REFL_NAMES={"反射シート":1,"蛍光反射シート":1,"高輝度反射シート":1,"ホログラム(リトルスター反射)":1};
 function matName(slot){var v=+$("m"+slot).value;return v>=0&&MATS[v]?MATS[v][0]:""}
 
 var atlas=new Image(),ready=false,tileCache={};
@@ -35,6 +36,27 @@ function texForMC(m,n){
   n=ALIAS[n]||n;return set[n]!==undefined?set[n]:null;
 }
 function texFor(slot){return texForMC(matName(slot),$("c"+slot).value)}
+// ストライプ／バイカラーの形（塗った所に2色目が入る）。type 1=ストライプ 2=バイカラー、dir 0=縦 1=横 2=斜め
+// ストライプは全体に通して、バイカラーは1文字ずつ（cells＝各文字の範囲 [左,右,上,下]）で塗り分ける
+function fxMask(w,h,type,dir,period,cells){
+  var m=document.createElement("canvas");m.width=w;m.height=h;var g=m.getContext("2d");g.fillStyle="#000";
+  var big=Math.hypot(w,h);
+  if(type===1){
+    g.translate(w/2,h/2);if(dir===2)g.rotate(Math.PI/4);
+    for(var p=-Math.ceil(big/period)*period;p<big;p+=period){if(dir===1)g.fillRect(-big,p,big*2,period/2);else g.fillRect(p,-big,period/2,big*2)}
+    return m;
+  }
+  cells.forEach(function(r,i){
+    // 文字の範囲＋隣の文字との中間まで（フチがはみ出す分も含める）
+    var L=i&&cells[i-1][3]===r[3]?(cells[i-1][1]+r[0])/2:0,R=i<cells.length-1&&cells[i+1][3]===r[3]?(r[1]+cells[i+1][0])/2:w;
+    var T=r[2]-(r[3]-r[2]),B=r[3]+(r[3]-r[2]);
+    g.save();g.beginPath();g.rect(L,Math.max(0,T),R-L,Math.min(h,B)-Math.max(0,T));g.clip();
+    g.translate((r[0]+r[1])/2,(r[2]+r[3])/2);if(dir===2)g.rotate(Math.PI/4);
+    if(dir===1)g.fillRect(-big,0,big*2,big);else g.fillRect(0,-big,big,big*2);
+    g.restore();
+  });
+  return m;
+}
 
 // プレビュー用キャンバスを用意（元の文字spanは隠す）
 var pvt=$("pvt"),cv=document.createElement("canvas");
@@ -61,9 +83,14 @@ function build(a){
   });
   var lh=fs*1.3;H=Math.ceil(lines.length*lh+pad*2);
   cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);cv.style.height=H+"px";
+  var fx=window.fxState?fxState():null,cells=[];
+  lines.forEach(function(line,li){
+    var x=(W-lw[li])/2,y=pad+lh*(li+.5);
+    line.forEach(function(p){cells.push([x*DPR,(x+p[1])*DPR,(y-fs/2)*DPR,(y+fs/2)*DPR]);x+=p[1]+ls});
+  });
   function rs(i){return R_ON&&!!SETMAP_ON[matName(i)]}
   var specs=[[c3,RING.c3*k,3,refl.c3||rs(3)],[c2,RING.c2*k,2,refl.c2||rs(2)],[c1,RING.c1*k,1,refl.c1||rs(1)],[fill,0,0,refl.fill||rs(0)]];
-  LAYERS=specs.filter(function(s){return s[0]}).map(function(s){
+  LAYERS=[].concat.apply([],specs.filter(function(s){return s[0]}).map(function(s){
     var c=document.createElement("canvas");c.width=cv.width;c.height=cv.height;
     var g=c.getContext("2d");g.scale(DPR,DPR);g.font=fstr;g.textBaseline="middle";
     g.lineJoin="round";g.lineCap="round";g.lineWidth=s[1]*2;g.fillStyle=g.strokeStyle="#000";
@@ -79,8 +106,27 @@ function build(a){
     }
     g.setTransform(1,0,0,1,0,0);g.fillStyle=paint;g.fillRect(0,0,c.width,c.height);
     if(s[3]){g.globalCompositeOperation="source-atop";g.fillStyle="rgba(255,255,255,.28)";g.fillRect(0,0,c.width,c.height)}
-    return {c:c,tex:k!==null,glow:s[3]};
-  });
+    // 一番外側のフチ：ストライプ／バイカラー（2色目を模様の形で上に重ねる）
+    var bTex=false,bGlow=false;
+    if(fx&&fx.type&&fx.slot===s[2]){
+      var b=document.createElement("canvas");b.width=c.width;b.height=c.height;var bg=b.getContext("2d");
+      bg.drawImage(c,0,0);bg.globalCompositeOperation="source-in";
+      var bm=fx.m>=0&&MATS[fx.m]?MATS[fx.m][0]:"",bk=fx.c?texForMC(bm,fx.c):null,bp=fx.c?hexForM(fx.m,fx.c):"#cfd8e3";
+      if(bk!==null){
+        bp=bg.createPattern(tileCanvas(bk),"repeat");bTex=true;
+        var brb=fx.c==="レインボー",bsc=(brb?lh/TH:fs/80*TEX_SCALE)*DPR;if(bp.setTransform&&window.DOMMatrix)bp.setTransform(new DOMMatrix([bsc,0,0,bsc,0,brb?pad*DPR:0]));
+      }
+      bg.fillStyle=bp;bg.fillRect(0,0,b.width,b.height);
+      bGlow=R_ON&&!!REFL_NAMES[bm];
+      if(bGlow){bg.globalCompositeOperation="source-atop";bg.fillStyle="rgba(255,255,255,.28)";bg.fillRect(0,0,b.width,b.height)}
+      var mk=fxMask(b.width,b.height,fx.type,fx.dir,fs*0.42*DPR,cells);
+      bg.globalCompositeOperation="destination-in";bg.drawImage(mk,0,0);
+      // 1色目からは2色目の部分を抜いて、2枚を別々に重ねる（光り方を色ごとに分けるため）
+      g.globalCompositeOperation="destination-out";g.drawImage(mk,0,0);
+      return [{c:c,tex:k!==null,glow:s[3]},{c:b,tex:bTex,glow:bGlow}];
+    }
+    return [{c:c,tex:k!==null,glow:s[3]}];
+  }));
 }
 
 var tmp=document.createElement("canvas");
@@ -111,7 +157,8 @@ function render(){
 
 // 元の描画関数を置き換え（calc() から呼ばれる）
 function syncToggle(){
-  var has=[0,1,2,3].some(function(i){return !!SETMAP_ON[matName(i)]})||miniMats().some(function(m){return !!SETMAP_ON[m]});
+  var fx=window.fxState?fxState():null;
+  var has=[0,1,2,3].some(function(i){return !!SETMAP_ON[matName(i)]})||miniMats().some(function(m){return !!SETMAP_ON[m]})||!!(fx&&fx.type&&fx.m>=0&&SETMAP_ON[MATS[fx.m][0]]);
   if(has)$("reflectToggleWrap").style.display="flex";
   else if($("reflectToggleWrap").style.display==="none"&&R_ON){R_ON=false;$("reflectOffBtn").className="pri";$("reflectOnBtn").className="sec"}
 }
@@ -124,7 +171,7 @@ window.styLayers=function(){
   }
 };
 // ===== 敬称・中文字：選んだ素材の質感をそのまま反映 =====
-var REFL_NAMES={"反射シート":1,"蛍光反射シート":1,"高輝度反射シート":1,"ホログラム(リトルスター反射)":1};
+
 var MINI={pvHonor:["honorM","honorC"],pvMid:["midM","midC"]};
 function miniName(id){var v=+$(MINI[id][0]).value;return v>=0&&MATS[v]?MATS[v][0]:""}
 function miniMats(){var r=[];if($("honor").checked&&$("honorTxt").value.trim())r.push(miniName("pvHonor"));if($("mid").value.trim())r.push(miniName("pvMid"));return r}
